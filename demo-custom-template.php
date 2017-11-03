@@ -6,56 +6,48 @@
     border: 1px solid #d3d3d3;
     min-width: 250px;
     margin-bottom: 6px;
-    background-color: #fff;
+    background-color: #fff
 }
-
 .coupondiv .promotiontype {
     padding: 15px;
-    overflow: hidden;
+    overflow: hidden
 }
-
 .promotag {
-    float: left;
+    float: left
 }
-
 .promotagcont {
     background: #fff;
-    color: #FE6F17;
+    color: #fe6f17;
     overflow: hidden;
     width: 70px;
     border-radius: 2px;
     -webkit-box-shadow: 1px 1px 4px rgba(34, 34, 34, .2);
     box-shadow: 1px 1px 4px rgba(34, 34, 34, .2);
-    text-align: center;
+    text-align: center
 }
-
 .promotagcont .saleorcoupon {
-    background: #FE6F17;
+    background: #fe6f17;
     padding: 7px 6px;
     color: #fff;
     font-size: 12px;
     font-weight: 700;
-    line-height: 2em;
+    line-height: 2em
 }
-
 .tagsale.promotagcont {
     background: #fff;
-    color: #1FB207;
+    color: #1fb207
 }
-
 .tagsale .saleorcoupon {
-    background: #1FB207;
+    background: #1fb207
 }
-
 .saveamount {
     min-height: 58px;
     font-size: 20px;
     margin: 0 auto;
     padding: 4px 3px 0;
     font-weight: 700;
-    line-height: 2.5;
+    line-height: 2.5
 }
-
 .coupondiv .cpbutton {
     float: right;
     position: relative;
@@ -63,18 +55,17 @@
     text-align: right;
     width: 140px;
     margin-top: 35px;
-    margin-right: 15px;
+    margin-right: 15px
 }
-
 .copyma {
     width: 110px;
     min-width: 110px;
     display: inline-block;
     position: relative;
     margin-right: 30px;
-    padding: 15px 10px;
-    border: 0px;
-    background: #FE6F17;
+    padding: 15px 5px;
+    border: 0;
+    background: #fe6f17;
     color: #fff;
     font-family: 'Roboto', sans-serif;
     font-size: 15px;
@@ -84,36 +75,32 @@
     text-decoration: none;
     cursor: pointer;
     border-style: solid;
-    border-color: #FE6F17;
-    border-radius: 0px;
+    border-color: #fe6f17;
+    border-radius: 0
 }
-
 .copyma:after {
-    border-left-color: #FE6F17;
+    border-left-color: #fe6f17;
     content: "";
     display: block;
     width: 0;
     height: 0;
     border-top: 45px solid transparent;
-    border-left: 45px solid #FE6F17;
+    border-left: 45px solid #fe6f17;
     position: absolute;
     right: -45px;
-    top: 0;
+    top: 0
 }
-
 .copyma:hover {
-    background-color: #CB5912;
+    background-color: #cb5912
 }
-
 .copyma:hover:after {
     opacity: 0;
-    -webkit-transition-duration: 0.5s;
-    transition-duration: 0.5s;
+    -webkit-transition-duration: .5s;
+    transition-duration: .5s
 }
-
 .coupon-code {
     position: absolute;
-    top: 0px;
+    top: 0;
     right: -45px;
     z-index: -1;
     min-width: 50px;
@@ -124,13 +111,12 @@
     text-align: center;
     text-decoration: none;
     cursor: pointer;
-    border-radius: 0px;
+    border-radius: 0;
     font-size: 16px;
     color: #222;
     font-family: 'Open Sans', sans-serif;
-    border: 1px solid #ddd;
+    border: 1px solid #ddd
 }
-
 .xemngayz {
     width: 88px;
     min-width: 88px;
@@ -138,8 +124,8 @@
     position: relative;
     margin-right: 30px;
     padding: 15px 15px;
-    border: 0px;
-    background: #1FB207;
+    border: 0;
+    background: #1fb207;
     color: #fff;
     font-family: 'Roboto', sans-serif;
     font-size: 16px;
@@ -149,23 +135,19 @@
     text-decoration: none;
     cursor: pointer;
     border-style: solid;
-    border-color: #1FB207;
-    border-radius: 0px;
+    border-color: #1fb207;
+    border-radius: 0
 }
-
 .xemngayz:hover {
-    background-color: #167F05;
+    background-color: #167f05
 }
-
 .promotiondetails {
     padding-left: 20px;
-    /*width: 66%;*/
-    width: calc(100% - 230px);
+    width: calc(100% - 270px);
     word-wrap: break-word;
     float: left;
-    font-size: 16px;
+    font-size: 16px
 }
-
 .coupontitle {
     display: block;
     font-family: 'Roboto', sans-serif;
@@ -174,95 +156,81 @@
     font-weight: 500;
     line-height: 1.2;
     text-decoration: none;
-    font-size: 20px;
+    font-size: 16px
 }
-
 .cpinfo {
     display: block;
     margin-bottom: 5px;
     color: #222;
     line-height: 1.6;
     text-decoration: none;
-    font-size: 14px;
+    font-size: 14px
 }
-
 .news-box .news-thumb,
 .news-box .news-info {
     display: inline-block;
-    float: left;
+    float: left
 }
-
 .news-box .news-info {
     width: 500px;
-    margin-left: 10px;
+    margin-left: 10px
 }
-
 @media screen and (max-width: 767px) {
     .coupontitle {
-        font-size: 18px;
+        font-size: 18px
     }
-
     .promotagcont {
-        width: 60px;
+        width: 60px
     }
-
     .promotagcont .saleorcoupon {
-        font-size: 11px;
+        font-size: 11px
     }
-
     .saveamount {
         min-height: 50px;
-        font-size: 16px;
+        font-size: 16px
     }
-
     .promotiondetails {
         margin-right: 0;
         font-size: 14px;
         width: auto;
         float: none;
         margin-left: 70px;
-        padding-left: 0;
+        padding-left: 0
     }
-
     .coupondiv .cpbutton {
         clear: both;
         margin-top: 0;
-        width: 116px;
+        width: 116px
     }
-
     .copyma {
         width: 100px;
         min-width: 100px;
-        padding: 10px 8px;
+        padding: 10px 8px
     }
-
     .copyma:after {
         border-top: 35px solid transparent;
-        border-left: 35px solid #FE6F17;
+        border-left: 35px solid #fe6f17;
         position: absolute;
         right: -34px;
-        top: 0;
+        top: 0
     }
-
     .coupon-code {
         position: absolute;
-        top: 0px;
+        top: 0;
         right: -35px;
         z-index: -1;
         height: 35px;
-        line-height: 35px;
+        line-height: 35px
     }
-
     .xemngayz {
         width: 135px;
         min-width: 135px;
-        padding: 10px 8px;
+        padding: 10px 8px
     }
-
     .xemngayz:hover {
-        background-color: #167F05;
+        background-color: #167f05
     }
-}			
+}	
 </style>
 <script type="text/javascript">
 function nhymxu_at_coupon_copy2clipboard( coupon_value ) {
