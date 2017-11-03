@@ -4,12 +4,12 @@ Plugin Name: AccessTrade Coupon
 Plugin URI: http://github.com/nhymxu/accesstrade-coupon
 Description: Hệ thống coupon đồng bộ tự động từ AccessTrade
 Author: Dũng Nguyễn (nhymxu)
-Version: 0.1.0
+Version: 0.1.1
 Author URI: http://dungnt.net
 */
 
 defined( 'ABSPATH' ) || die;
-define('NHYMXU_AT_COUPON_VER', '0.1.0');
+define('NHYMXU_AT_COUPON_VER', '0.1.1');
 
 date_default_timezone_set('Asia/Ho_Chi_Minh');
 
@@ -94,7 +94,7 @@ class nhymxu_at_coupon {
 		}
 		$vendor_slug = implode(',', $vendor_slug);
 	
-		$sql = "SELECT * FROM {$wpdb->prefix}coupons WHERE type IN ({$vendor_slug}) AND exp >= '{$today}' ORDER BY rand()";
+		$sql = "SELECT * FROM {$wpdb->prefix}coupons WHERE type IN ({$vendor_slug}) AND exp >= '{$today}' ORDER BY exp ASC";
 	
 		if( $category != '' ) {
 			$cat_slug = explode(',', $category);
@@ -114,7 +114,7 @@ class nhymxu_at_coupon {
 			}
 			$cat_id = implode(',', $cat_id);
 	
-			$sql = "SELECT coupons.* FROM {$wpdb->prefix}coupons AS coupons LEFT JOIN {$wpdb->prefix}coupon_category_rel AS rel ON rel.coupon_id = coupons.id WHERE coupons.type IN ({$vendor_slug}) AND rel.category_id IN ({$cat_id}) AND exp >= '{$today}' ORDER BY rand()";	
+			$sql = "SELECT coupons.* FROM {$wpdb->prefix}coupons AS coupons LEFT JOIN {$wpdb->prefix}coupon_category_rel AS rel ON rel.coupon_id = coupons.id WHERE coupons.type IN ({$vendor_slug}) AND rel.category_id IN ({$cat_id}) AND coupons.exp >= '{$today}' ORDER BY coupons.exp ASC";	
 		}
 	
 		if( $limit != '' && $limit >= 0 ) {
