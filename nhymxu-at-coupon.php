@@ -4,12 +4,12 @@ Plugin Name: AccessTrade Coupon
 Plugin URI: http://github.com/nhymxu/accesstrade-coupon
 Description: Hệ thống coupon đồng bộ tự động từ AccessTrade
 Author: Dũng Nguyễn (nhymxu)
-Version: 0.1.1
+Version: 0.1.2
 Author URI: http://dungnt.net
 */
 
 defined( 'ABSPATH' ) || die;
-define('NHYMXU_AT_COUPON_VER', '0.1.1');
+define('NHYMXU_AT_COUPON_VER', '0.1.2');
 
 date_default_timezone_set('Asia/Ho_Chi_Minh');
 
@@ -427,7 +427,7 @@ class nhymxu_at_coupon {
 	
 		require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 
-		$sql = "CREATE TABLE IF NOT EXISTS `wp_coupons` (
+		$sql = "CREATE TABLE IF NOT EXISTS {$wpdb->prefix}coupons (
 			`id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
 			`type` VARCHAR(10) NOT NULL DEFAULT '' COLLATE 'utf8mb4_unicode_ci',
 			`title` TEXT NOT NULL COLLATE 'utf8mb4_unicode_ci',
@@ -440,7 +440,7 @@ class nhymxu_at_coupon {
 		) {$charset_collate};";
 		dbDelta( $sql );
 		
-		$sql = "CREATE TABLE IF NOT EXISTS `wp_coupon_categories` (
+		$sql = "CREATE TABLE IF NOT EXISTS {$wpdb->prefix}coupon_categories (
 			`id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
 			`name` VARCHAR(250) NULL DEFAULT '' COLLATE 'utf8mb4_unicode_ci',
 			`slug` VARCHAR(100) NOT NULL DEFAULT '' COLLATE 'utf8mb4_unicode_ci',
@@ -449,14 +449,14 @@ class nhymxu_at_coupon {
 		) {$charset_collate};";
 		dbDelta( $sql );
 		
-		$sql = "CREATE TABLE IF NOT EXISTS `wp_coupon_category_rel` (
+		$sql = "CREATE TABLE IF NOT EXISTS {$wpdb->prefix}coupon_category_rel (
 			`coupon_id` INT(11) NOT NULL,
 			`category_id` INT(11) NOT NULL,
 			UNIQUE INDEX `coupon_id` (`coupon_id`, `category_id`)
 		) {$charset_collate};";
 		dbDelta( $sql );
 		
-		$sql = "CREATE TABLE IF NOT EXISTS `wp_coupon_logs` (
+		$sql = "CREATE TABLE IF NOT EXISTS {$wpdb->prefix}coupon_logs (
 			`id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
 			`created_at` INT(20) UNSIGNED NOT NULL,
 			`data` TEXT NOT NULL COLLATE 'utf8mb4_unicode_ci',
