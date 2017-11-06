@@ -20,6 +20,7 @@ class nhymxu_at_coupon {
 		add_shortcode( 'atcoupon', [$this,'shortcode_callback'] );
 		add_action('admin_menu', [$this,'admin_page'] );
 		add_action( 'init', [$this, 'init_updater'] );
+		add_action( 'wp_ajax_nhymxu_coupons_ajax_forceupdate', [$this, 'ajax_force_update'] );
 	}
 	
 	public function do_this_twicedaily() {
@@ -221,6 +222,15 @@ class nhymxu_at_coupon {
 		return 'https://pub.accesstrade.vn/deep_link/'. $option['uid'] .'?url=' . rawurlencode( $url ) . $utm_source;
 	}
 
+	/*
+	 * Force update coupon from server
+	 */
+	public function ajax_force_update() {
+		$this->do_this_twicedaily();
+		echo 'running';
+		wp_die();
+	}
+
 	public function admin_page() {
 		add_options_page('AccessTrade Coupon', 'AccessTrade Coupon', 'manage_options', 'accesstrade_coupon', [$this,'admin_page_callback']);
 	}
@@ -238,7 +248,24 @@ class nhymxu_at_coupon {
 		}
 		$option = get_option('nhymxu_at_coupon', ['uid' => '', 'utmsource' => '']);
 		?>
-		
+		<script type="text/javascript">
+		function nhymxu_force_update_coupons() {
+			var is_run = jQuery('#nhymxu_force_update').data('run');
+			if( is_run !== 0 ) {
+				console.log('Đã chạy rồi');
+				return false;
+			} 
+			jQuery('#nhymxu_force_update').attr('disabled', 'disabled');
+			jQuery.ajax({
+				type: "POST",
+				url: ajaxurl,
+				data: { action: 'nhymxu_coupons_ajax_forceupdate' },
+				success: function(response) {
+					alert('Khởi chạy thành công. Vui lòng đợi vài phút để dữ liệu được cập nhật.');
+				}
+			});
+		}
+		</script>
 		<div>
 			<h2>Cài đặt AccessTrade Coupon</h2>
 			<br>
@@ -299,8 +326,13 @@ class nhymxu_at_coupon {
 			?>
 			<p>Tổng số coupon trong hệ thống: <strong><?=$total_coupon;?></strong></p>
 			<p>Tổng số coupon hết hạn: <strong><?=$total_expired_coupon;?></strong></p>
-			<?php $last_run = get_option('nhymxu_at_coupon_sync_time', 0);?>
-			<p>Lần đồng bộ cuối: <strong><?=( $last_run == 0 ) ? 'chưa rõ' : date("Y-m-d H:i:s", $last_run);?></strong></p>
+			<?php $last_run = (int) get_option('nhymxu_at_coupon_sync_time', 0); $now = time(); ?>
+			<p>
+				Lần đồng bộ cuối: <strong><?=( $last_run == 0 ) ? 'chưa rõ' : date("Y-m-d H:i:s", $last_run);?></strong>
+				<?php if( $last_run == 0 || ( ($now - $last_run) >= 108000 ) ): ?>
+				- <button id="nhymxu_force_update" data-run="0" onclick="nhymxu_force_update_coupons();">Cập nhật ngay</button>
+				<?php endif; ?>
+			</p>
 		</div>
 		<?php
 	}
