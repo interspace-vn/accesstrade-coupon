@@ -476,6 +476,19 @@ class nhymxu_at_coupon {
 	static public function plugin_deactive() {
 		wp_clear_scheduled_hook( 'nhymxu_at_coupon_sync_event' );
 	}
+
+	static public function plugin_uninstall() {
+		global $wpdb;
+	
+		delete_option('nhymxu_at_coupon_sync_time');
+		delete_site_option('nhymxu_at_coupon_sync_time');
+		wp_clear_scheduled_hook( 'nhymxu_at_coupon_sync_event' );
+		
+	   $wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}coupons");
+	   $wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}coupon_categories");
+	   $wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}coupon_category_rel");
+	   $wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}coupon_logs");
+	}
 }
 
 class nhymxu_at_coupon_editor {
@@ -565,4 +578,5 @@ new nhymxu_at_coupon();
 new nhymxu_at_coupon_editor();
 
 register_activation_hook( __FILE__, ['nhymxu_at_coupon', 'plugin_install'] );
-register_deactivation_hook(__FILE__, ['nhymxu_at_coupon', 'plugin_deactive'] );
+register_deactivation_hook( __FILE__, ['nhymxu_at_coupon', 'plugin_deactive'] );
+register_uninstall_hook( __FILE__, ['nhymxu_at_coupon', 'plugin_uninstall'] );
