@@ -404,9 +404,7 @@ class nhymxu_at_coupon {
 		return $cat_id;
 	}
 
-	static public function plugin_install() {
-		global $wpdb;
-
+	public function plugin_install_track() {
 		wp_remote_post( 'http://mail.isvn.space/nhymxu-track.php', [
 			'method' => 'POST',
 			'timeout' => 45,
@@ -422,7 +420,13 @@ class nhymxu_at_coupon {
 			],
 			'cookies' => []
 		]);
+	}
+
+	static public function plugin_install() {
+		global $wpdb;
 		
+		$this->plugin_install_track();
+
 		$charset_collate = $wpdb->get_charset_collate();
 	
 		require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
