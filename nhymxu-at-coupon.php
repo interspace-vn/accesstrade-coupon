@@ -293,9 +293,12 @@ class nhymxu_at_coupon {
 			</p>
 			<hr>
 			<?php
-			$total_coupon = $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->prefix}coupons" );			
+			$total_coupon = $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->prefix}coupons" );
+			$today = date('Y-m-d');	
+			$total_expired_coupon = $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->prefix}coupons WHERE exp < '{$today}'" );		
 			?>
 			<p>Tổng số coupon trong hệ thống: <strong><?=$total_coupon;?></strong></p>
+			<p>Tổng số coupon hết hạn: <strong><?=$total_expired_coupon;?></strong></p>
 			<?php $last_run = get_option('nhymxu_at_coupon_sync_time', 0);?>
 			<p>Lần đồng bộ cuối: <strong><?=( $last_run == 0 ) ? 'chưa rõ' : date("Y-m-d H:i:s", $last_run);?></strong></p>
 		</div>
