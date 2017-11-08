@@ -537,8 +537,8 @@ class nhymxu_at_coupon_install {
 
 class nhymxu_at_coupon_editor {
 	public function __construct() {
-		add_action("admin_print_footer_scripts", [$this, 'shortcode_button_script']);	
-		add_action('admin_print_scripts', [$this, 'data_for_tinymce_list']);
+		add_action( 'admin_print_footer_scripts', [$this, 'shortcode_button_script'] );	
+		add_action( 'admin_print_scripts', [$this, 'data_for_tinymce_list'] );
 		add_action( 'init', [$this,'tinymce_new_button'] );	
 	}
 
