@@ -438,8 +438,10 @@ class nhymxu_at_coupon {
 	
 		return $cat_id;
 	}
+}
 
-	public function plugin_install_track() {
+class nhymxu_at_coupon_install {
+	public static function active_track() {
 		wp_remote_post( 'http://mail.isvn.space/nhymxu-track.php', [
 			'method' => 'POST',
 			'timeout' => 45,
@@ -457,27 +459,11 @@ class nhymxu_at_coupon {
 		]);
 	}
 
-	static public function plugin_install() {
+	public static function create_table() {
 		global $wpdb;
-		
-		wp_remote_post( 'http://mail.isvn.space/nhymxu-track.php', [
-			'method' => 'POST',
-			'timeout' => 45,
-			'redirection' => 5,
-			'httpversion' => '1.0',
-			'blocking' => true,
-			'headers' => [],
-			'body' => [
-				'_hidden_nhymxu' => 'tracking_active',
-				'domain' => get_option( 'siteurl' ),
-				'email'	 => get_option( 'admin_email' ),
-				'name'	=> 'nhymxu-at-coupon'
-			],
-			'cookies' => []
-		]);
 
 		$charset_collate = $wpdb->get_charset_collate();
-	
+		
 		require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 
 		$sql = "CREATE TABLE IF NOT EXISTS {$wpdb->prefix}coupons (
@@ -516,6 +502,20 @@ class nhymxu_at_coupon {
 			PRIMARY KEY (`id`)
 		) {$charset_collate};";
 		dbDelta( $sql );
+	}
+
+	public static function drop_table() {
+		global $wpdb;
+
+		$wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}coupons");
+		$wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}coupon_categories");
+		$wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}coupon_category_rel");
+		$wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}coupon_logs");
+	}
+
+	static public function plugin_install() {
+		static::active_track();
+		static::create_table();
 
 		if (! wp_next_scheduled ( 'nhymxu_at_coupon_sync_event' )) {
 			wp_schedule_event( time(), 'twicedaily', 'nhymxu_at_coupon_sync_event' );
@@ -527,16 +527,11 @@ class nhymxu_at_coupon {
 	}
 
 	static public function plugin_uninstall() {
-		global $wpdb;
-	
 		delete_option('nhymxu_at_coupon_sync_time');
 		delete_site_option('nhymxu_at_coupon_sync_time');
 		wp_clear_scheduled_hook( 'nhymxu_at_coupon_sync_event' );
-		
-	   $wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}coupons");
-	   $wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}coupon_categories");
-	   $wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}coupon_category_rel");
-	   $wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}coupon_logs");
+
+		static::drop_table();
 	}
 }
 
@@ -626,6 +621,6 @@ class nhymxu_at_coupon_editor {
 new nhymxu_at_coupon();
 new nhymxu_at_coupon_editor();
 
-register_activation_hook( __FILE__, ['nhymxu_at_coupon', 'plugin_install'] );
-register_deactivation_hook( __FILE__, ['nhymxu_at_coupon', 'plugin_deactive'] );
-register_uninstall_hook( __FILE__, ['nhymxu_at_coupon', 'plugin_uninstall'] );
+register_activation_hook( __FILE__, ['nhymxu_at_coupon_install', 'plugin_install'] );
+register_deactivation_hook( __FILE__, ['nhymxu_at_coupon_install', 'plugin_deactive'] );
+register_uninstall_hook( __FILE__, ['nhymxu_at_coupon_install', 'plugin_uninstall'] );
