@@ -32,9 +32,11 @@ class nhymxu_at_coupon {
 		$result = wp_remote_get( $url, ['timeout'=>'60'] );
 
 		if ( is_wp_error( $result ) ) {
-			$msg = 'previous_time: ' . $previous_time . PHP_EOL;
-			$msg .= 'current_time: ' . $current_time . PHP_EOL;
-			$msg .= 'Error: ' . $result->get_error_message() . PHP_EOL;
+			$msg = [];
+			$msg['previous_time'] = $previous_time;
+			$msg['current_time'] = $current_time;
+			$msg['error_msg'] = $result->get_error_message();
+			$msg['action'] = 'get_remote_data';
 
 			$this->insert_log( $msg );
 		} else {
@@ -48,9 +50,12 @@ class nhymxu_at_coupon {
 					update_option('nhymxu_at_coupon_sync_time', $current_time);
 					$wpdb->query("COMMIT;");
 				} catch ( Exception $e ) {
-					$msg = 'previous_time: ' . $previous_time . PHP_EOL;
-					$msg .= 'current_time: ' . $current_time . PHP_EOL;
-					$msg .= 'Error: Insert error' . PHP_EOL;			
+					$msg = [];
+					$msg['previous_time'] = $previous_time;
+					$msg['current_time'] = $current_time;
+					$msg['error_msg'] = $e->getMessage();
+					$msg['action'] = 'insert_data';
+
 					$this->insert_log( $msg );
 
 					$wpdb->query("ROLLBACK;");
@@ -256,7 +261,7 @@ class nhymxu_at_coupon {
 			$wpdb->prefix . 'coupon_logs',
 			[
 				'created_at'	=> time(),
-				'data'	=> $data
+				'data'	=> json_encode( $data )
 			],
 			['%d', '%s']
 		);
@@ -298,8 +303,12 @@ class nhymxu_at_coupon {
 	
 			return 1;
 		}
-		$msg = 'Error: Insert coupon error' . PHP_EOL;
-		$msg .= json_encode( $data );
+
+		$msg = [];
+		$msg['previous_time'] = '';
+		$msg['current_time'] = '';
+		$msg['error_msg'] = json_encode( $data );
+		$msg['action'] = 'insert_coupon';
 			
 		$this->insert_log( $msg );		
 
