@@ -232,10 +232,16 @@ class nhymxu_at_coupon {
 	}
 
 	public function admin_page() {
-		add_options_page('AccessTrade Coupon', 'AccessTrade Coupon', 'manage_options', 'accesstrade_coupon', [$this,'admin_page_callback']);
+		add_menu_page( 'Danh sách coupon', 'AT Coupon', 'manage_options', 'accesstrade_coupon', [$this, 'admin_page_callback_list'], 'dashicons-tickets', 6 );
+		add_submenu_page( 'accesstrade_coupon', 'Danh sách coupon', 'Tất cả', 'manage_options', 'accesstrade_coupon', [$this, 'admin_page_callback_list'] );
+		add_submenu_page( 'accesstrade_coupon', 'Thêm coupon mới', 'Thêm mới', 'manage_options', 'accesstrade_coupon_addnew', [$this, 'admin_page_callback_addnew'] );
+		add_submenu_page( 'accesstrade_coupon', 'Cài đặt Coupon', 'Cài đặt', 'manage_options', 'accesstrade_coupon_settings', [$this, 'admin_page_callback_settings'] );
 	}
 
-	public function admin_page_callback() {
+	/*
+	 * Admin page setting
+	 */
+	public function admin_page_callback_settings() {
 		global $wpdb;
 		if( isset( $_POST, $_POST['nhymxu_hidden'] ) && $_POST['nhymxu_hidden'] == 'coupon' ) {
 			$input = [
@@ -269,7 +275,7 @@ class nhymxu_at_coupon {
 		<div>
 			<h2>Cài đặt AccessTrade Coupon</h2>
 			<br>
-			<form action="options-general.php?page=accesstrade_coupon" method="post">
+			<form action="<?=admin_url( 'admin.php?page=accesstrade_coupon_settings' );?>" method="post">
 				<input type="hidden" name="nhymxu_hidden" value="coupon">
 				<table>
 					<tr>
@@ -335,6 +341,20 @@ class nhymxu_at_coupon {
 			</p>
 		</div>
 		<?php
+	}
+
+	/*
+	 * Admin page add new
+	 */
+	public function admin_page_callback_addnew() {
+
+	}
+
+	/*
+	 * Admin page list
+	 */
+	public function admin_page_callback_list() {
+		echo 'abc';
 	}
 
 	public function allow_external_update_host( $allow, $host, $url ) {
