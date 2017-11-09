@@ -18,7 +18,6 @@ class nhymxu_at_coupon {
 		add_filter( 'http_request_host_is_external', [$this, 'allow_external_update_host'], 10, 3 );
 		add_action( 'nhymxu_at_coupon_sync_event', [$this,'do_this_twicedaily'] );
 		add_shortcode( 'atcoupon', [$this,'shortcode_callback'] );
-		add_action('admin_menu', [$this,'admin_page'] );
 		add_action( 'init', [$this, 'init_updater'] );
 		add_action( 'wp_ajax_nhymxu_coupons_ajax_forceupdate', [$this, 'ajax_force_update'] );
 	}
@@ -231,8 +230,116 @@ class nhymxu_at_coupon {
 		wp_die();
 	}
 
+	public function allow_external_update_host( $allow, $host, $url ) {
+		//if ( $host == 'sv.isvn.space' ) {$allow = true;}
+		$allow = true;
+		return $allow;
+	}
+
+	public function init_updater() {
+		if( is_admin() ) {
+			if( !class_exists('nhymxu_AT_AutoUpdate') ) {
+				require_once('nhymxu-updater.php');
+			}
+			$plugin_remote_path = 'http://sv.isvn.space/wp-update/plugin-accesstrade-coupon.json';
+			$plugin_slug = plugin_basename( __FILE__ );
+			$license_user = 'nhymxu';
+			$license_key = 'AccessTrade';
+			new nhymxu_AT_AutoUpdate( NHYMXU_AT_COUPON_VER, $plugin_remote_path, $plugin_slug, $license_user, $license_key );
+		}
+	}
+
+	private function insert_log( $data ) {
+		global $wpdb;
+
+		$wpdb->insert(
+			$wpdb->prefix . 'coupon_logs',
+			[
+				'created_at'	=> time(),
+				'data'	=> $data
+			],
+			['%d', '%s']
+		);
+		
+	}
+
+	private function insert_coupon( $data ) {
+		global $wpdb;
+		
+		$result = $wpdb->insert( 
+			$wpdb->prefix . 'coupons',
+			[
+				'type'	=> $data['merchant'],
+				'title' => $data['title'],
+				'code'	=> ($data['coupon_code']) ? $data['coupon_code'] : '',
+				'exp'	=> $data['date_end'],
+				'note'	=> $data['coupon_desc'],
+				'url'	=> ($data['link']) ? $data['link'] : '',
+				'save'	=> ($data['coupon_save']) ? $data['coupon_save'] : ''
+			],
+			['%s','%s','%s','%s','%s','%s','%s']
+		);
+		
+		if ( $result ) {
+			$coupon_id = $wpdb->insert_id;
+			if( isset( $data['categories'] ) && !empty( $data['categories'] ) ) {
+				$cat_ids = $this->get_coupon_category_id( $data['categories'] );
+				foreach( $cat_ids as $row ) {
+					$wpdb->insert(
+						$wpdb->prefix . 'coupon_category_rel',
+						[
+							'coupon_id' => $coupon_id,
+							'category_id'	=> $row
+						],
+						['%d', '%d']
+					);
+				}
+			}
+	
+			return 1;
+		}
+		$msg = 'Error: Insert coupon error' . PHP_EOL;
+		$msg .= json_encode( $data );
+			
+		$this->insert_log( $msg );		
+
+		return 0;
+	}
+
+	private function get_coupon_category_id( $input ) {
+		global $wpdb;
+	
+		$cat_id = [];
+	
+		foreach( $input as $row ) {
+			$result = $wpdb->get_row("SELECT * FROM {$wpdb->prefix}coupon_categories WHERE slug = '{$row['slug']}'");
+			
+			if( $result ) {
+				$cat_id[] = (int) $result->id;
+			} else {
+				$result = $wpdb->insert(
+					$wpdb->prefix . 'coupon_categories',
+					[
+						'name'	=> $row['title'],
+						'slug'	=> $row['slug']
+					],
+					['%s', '%s']
+				);
+				$cat_id[] = (int) $wpdb->insert_id;				
+			}
+		}
+	
+		return $cat_id;
+	}
+}
+
+class nhymxu_at_coupon_admin {
+	public function __construct() {
+		add_action( 'admin_menu', [$this,'admin_page'] );
+	}
+
 	public function admin_page() {
-		add_menu_page( 'Danh sách coupon', 'AT Coupon', 'manage_options', 'accesstrade_coupon', [$this, 'admin_page_callback_list'], 'dashicons-tickets', 6 );
+		add_menu_page( 'Danh sách coupon', 'Smart Coupons', 'manage_options', 'accesstrade_coupon', [$this, 'admin_page_callback_list'], 'dashicons-tickets', 6 );
 		add_submenu_page( 'accesstrade_coupon', 'Danh sách coupon', 'Tất cả', 'manage_options', 'accesstrade_coupon', [$this, 'admin_page_callback_list'] );
 		add_submenu_page( 'accesstrade_coupon', 'Thêm coupon mới', 'Thêm mới', 'manage_options', 'accesstrade_coupon_addnew', [$this, 'admin_page_callback_addnew'] );
 		add_submenu_page( 'accesstrade_coupon', 'Cài đặt Coupon', 'Cài đặt', 'manage_options', 'accesstrade_coupon_settings', [$this, 'admin_page_callback_settings'] );
@@ -354,109 +461,14 @@ class nhymxu_at_coupon {
 	 * Admin page list
 	 */
 	public function admin_page_callback_list() {
-		echo 'abc';
-	}
-
-	public function allow_external_update_host( $allow, $host, $url ) {
-		//if ( $host == 'sv.isvn.space' ) {$allow = true;}
-		$allow = true;
-		return $allow;
-	}
-
-	public function init_updater() {
-		if( is_admin() ) {
-			if( !class_exists('nhymxu_AT_AutoUpdate') ) {
-				require_once('nhymxu-updater.php');
-			}
-			$plugin_remote_path = 'http://sv.isvn.space/wp-update/plugin-accesstrade-coupon.json';
-			$plugin_slug = plugin_basename( __FILE__ );
-			$license_user = 'nhymxu';
-			$license_key = 'AccessTrade';
-			new nhymxu_AT_AutoUpdate( NHYMXU_AT_COUPON_VER, $plugin_remote_path, $plugin_slug, $license_user, $license_key );
-		}
-	}
-
-	private function insert_log( $data ) {
-		global $wpdb;
-
-		$wpdb->insert(
-			$wpdb->prefix . 'coupon_logs',
-			[
-				'created_at'	=> time(),
-				'data'	=> $data
-			],
-			['%d', '%s']
-		);
-		
-	}
-
-	private function insert_coupon( $data ) {
-		global $wpdb;
-		
-		$result = $wpdb->insert( 
-			$wpdb->prefix . 'coupons',
-			[
-				'type'	=> $data['merchant'],
-				'title' => $data['title'],
-				'code'	=> ($data['coupon_code']) ? $data['coupon_code'] : '',
-				'exp'	=> $data['date_end'],
-				'note'	=> $data['coupon_desc'],
-				'url'	=> ($data['link']) ? $data['link'] : '',
-				'save'	=> ($data['coupon_save']) ? $data['coupon_save'] : ''
-			],
-			['%s','%s','%s','%s','%s','%s','%s']
-		);
-		
-		if ( $result ) {
-			$coupon_id = $wpdb->insert_id;
-			if( isset( $data['categories'] ) && !empty( $data['categories'] ) ) {
-				$cat_ids = $this->get_coupon_category_id( $data['categories'] );
-				foreach( $cat_ids as $row ) {
-					$wpdb->insert(
-						$wpdb->prefix . 'coupon_category_rel',
-						[
-							'coupon_id' => $coupon_id,
-							'category_id'	=> $row
-						],
-						['%d', '%d']
-					);
-				}
-			}
-	
-			return 1;
-		}
-		$msg = 'Error: Insert coupon error' . PHP_EOL;
-		$msg .= json_encode( $data );
-			
-		$this->insert_log( $msg );		
-
-		return 0;
-	}
-
-	private function get_coupon_category_id( $input ) {
-		global $wpdb;
-	
-		$cat_id = [];
-	
-		foreach( $input as $row ) {
-			$result = $wpdb->get_row("SELECT * FROM {$wpdb->prefix}coupon_categories WHERE slug = '{$row['slug']}'");
-			
-			if( $result ) {
-				$cat_id[] = (int) $result->id;
-			} else {
-				$result = $wpdb->insert(
-					$wpdb->prefix . 'coupon_categories',
-					[
-						'name'	=> $row['title'],
-						'slug'	=> $row['slug']
-					],
-					['%s', '%s']
-				);
-				$cat_id[] = (int) $wpdb->insert_id;				
-			}
-		}
-	
-		return $cat_id;
+		$coupon_list_table = new Nhymxu_AT_Coupon_List();
+		$coupon_list_table->prepare_items();
+	?>
+		<div class="wrap">
+			<h2 class="dashicons-before dashicons-tickets">Coupons</h2>
+			<?php $coupon_list_table->display(); ?>
+		</div>
+	<?php
 	}
 }
 
@@ -640,6 +652,11 @@ class nhymxu_at_coupon_editor {
 
 new nhymxu_at_coupon();
 new nhymxu_at_coupon_editor();
+
+if( is_admin() ) {
+	require_once __DIR__ . '/coupons_list.php';
+	new nhymxu_at_coupon_admin();
+}
 
 register_activation_hook( __FILE__, ['nhymxu_at_coupon_install', 'plugin_install'] );
 register_deactivation_hook( __FILE__, ['nhymxu_at_coupon_install', 'plugin_deactive'] );
