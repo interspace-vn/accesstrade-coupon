@@ -552,7 +552,7 @@ class nhymxu_at_coupon_admin {
 			<?php $last_run = (int) get_option('nhymxu_at_coupon_sync_time', 0); $now = time(); ?>
 			<p>
 				Lần đồng bộ cuối: <strong><?=( $last_run == 0 ) ? 'chưa rõ' : date("Y-m-d H:i:s", $last_run);?></strong>
-				<?php if( $last_run == 0 || ( ($now - $last_run) >= 108000 ) ): ?>
+				<?php if( $last_run == 0 || ( ($now - $last_run) >= 1800 ) ): ?>
 				- <button id="nhymxu_force_update" data-run="0" onclick="nhymxu_force_update_coupons();">Cập nhật ngay</button>
 				<?php endif; ?>
 			</p>
