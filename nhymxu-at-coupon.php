@@ -345,7 +345,98 @@ class nhymxu_at_coupon {
 class nhymxu_at_coupon_admin {
 	public function __construct() {
 		add_action( 'admin_menu', [$this,'admin_page'] );
+		add_action( 'wp_ajax_nhymxu_coupons_ajax_insertupdate', [$this, 'ajax_insert_update'] );
 	}
+
+	public function ajax_insert_update() {
+		global $wpdb;
+
+		$input = $_POST['coupon_data'];
+
+		if( $input['cid'] > 0 ) {
+			$result = $this->coupon_update( $input );
+			file_put_contents(WP_CONTENT_DIR . '/log.txt', 'update');
+		} else {
+			$result = $this->coupon_insert( $input );
+			file_put_contents(WP_CONTENT_DIR . '/log.txt', 'insert');
+		}
+
+		echo ( $result === false ) ? 0 : 1;
+
+		wp_die();
+	}
+
+	/*
+	 * callback insert function for ajax action
+	 */
+	private function coupon_insert( $input ) {
+		global $wpdb;
+
+		$result = $wpdb->insert( 
+			$wpdb->prefix . 'coupons',
+			[
+				'type'	=> $input['merchant'],
+				'title' => $input['title'],
+				'code'	=> ($input['code']) ? $input['code'] : '',
+				'exp'	=> $input['exp'],
+				'note'	=> $input['note'],
+				'url'	=> ($input['url']) ? $input['url'] : '',
+				'save'	=> ($input['save']) ? $input['save'] : ''
+			],
+			['%s','%s','%s','%s','%s','%s','%s']
+		);
+
+		if( $result === false ) {
+			file_put_contents(WP_CONTENT_DIR . '/insert_error.json', json_encode($input));
+		} else {
+			file_put_contents(WP_CONTENT_DIR . '/insert_id.txt', $result);
+		}
+		return $result;
+	}
+
+	/*
+	 * callback update function for ajax action
+	 */
+	private function coupon_update( $input ) {
+		global $wpdb;
+
+		$result = $wpdb->update( 
+			$wpdb->prefix . 'coupons',
+			[
+				'type'	=> $input['merchant'],
+				'title' => $input['title'],
+				'code'	=> ($input['code']) ? $input['code'] : '',
+				'exp'	=> $input['exp'],
+				'note'	=> $input['note'],
+				'url'	=> ($input['url']) ? $input['url'] : '',
+				'save'	=> ($input['save']) ? $input['save'] : ''
+			],
+			[ 'id'	=> $input['cid'] ],
+			['%s','%s','%s','%s','%s','%s','%s'], 
+			['%d']
+		);
+
+		if( $result === false ) {
+			file_put_contents(WP_CONTENT_DIR . '/update_error.json', json_encode($input));
+		} else {
+			file_put_contents(WP_CONTENT_DIR . '/update_id.txt', $result);
+		}
+
+		return $result;
+	}
+
+	private function get_coupon_detail( $coupon_id ) {
+		global $wpdb;
+
+		$coupon_id = (int) $coupon_id;
+		$result = $wpdb->get_row("SELECT * FROM {$wpdb->prefix}coupons WHERE id = {$coupon_id}", ARRAY_A);
+
+		if ( null !== $result ) {
+			return $result;
+		}
+
+		return false;
+	} 
 
 	public function admin_page() {
 		add_menu_page( 'Danh sách coupon', 'Smart Coupons', 'manage_options', 'accesstrade_coupon', [$this, 'admin_page_callback_list'], 'dashicons-tickets', 6 );
@@ -463,7 +554,135 @@ class nhymxu_at_coupon_admin {
 	 * Admin page add new
 	 */
 	public function admin_page_callback_addnew() {
+		$list_campains = [
+			"mykingdom","daonuan","fadovn","bookingcom","klookvn","canifa","dunlopsport","agodacj","fiditour",
+			"agodamobile","foodfest2","hnammobile","vuabia","benthanhtourist","talentvn","tokopediaindo",
+			"blanjaindo","pnj","lazadaind","uber_rider","central_th","camdonhanh","dichungtaxi",
+			"lazada","mytourapi","pvfc","sonicecompany.myharavan.com",
+			"gotadifne","sonice","vinaphone","vpbankcard",
+			"foodizzi","pubokid","konvy","lychee",
+			"doctordong","aeon.myharavan.com","queenie",
+			"eropi","ubernew","robins","lanuong","leflair",
+			"lottevn","ferosh","ucancook","insulac",
+			"alapro","cliptv","vietravel","redcat","zcom",
+			"divui","gotadi","sacombank","fptshop","vtcacademy",
+			"access-ec.myharavan.com","sendovn","tugo","atadi","vntrip",
+			"california","vienthonga","adayroi","fpt","careerbuilder",
+			"kyna","begodi","citibank","vinabook","mktteam","viviane","ivivu",
+			"nguyenkimvn","bookin","yes24vn","mytourvn"
+		];
 
+		$default_data = [
+			'id'	=> 0,
+			'type'	=> '',
+			'title' => '',
+			'code'	=> '',
+			'exp'	=> '',
+			'note'	=> '',
+			'url'	=> '',
+			'save'	=> ''			
+		];
+
+		if( isset($_GET['coupon_id']) && $_GET['coupon_id'] != '' ) {
+			$tmp = $this->get_coupon_detail($_GET['coupon_id']);
+			if( $tmp ) {
+				$default_data = $tmp;
+			}
+		}
+	?>
+	<link rel="stylesheet" href="//unpkg.com/purecss@1.0.0/build/forms-min.css">
+	<link rel="stylesheet" href="//unpkg.com/purecss@1.0.0/build/buttons-min.css">
+	<script type="text/javascript">
+	function nhymxu_coupon_exec() {
+		var jq = jQuery;
+		var input = {
+			cid: jq('#input_couponid').val(),
+			merchant: jq('#input_merchant').val(),
+			title: jq('#input_title').val(),
+			code: jq('#input_code').val(),
+			note: jq('#input_note').val(),
+			url: jq('#input_url').val(),
+			save: jq('#input_save').val(),
+			exp: jq('#input_exp').val()
+		};
+
+		if( input['merchant'] === '' || input['title'] === '' || input['url'] === '' || input['exp'] === '' ) {
+			jq('#nhymxu_coupon_notice').html('Nhập đủ các mục bắt buộc!');
+			return false;
+		}
+
+		jQuery.ajax({
+			type: "POST",
+			url: ajaxurl,
+			data: { action: 'nhymxu_coupons_ajax_insertupdate', coupon_data: input },
+			success: function(response) {
+				if( response == 0 ) {
+					alert('Xử lý thất bại. Vui lòng thử lại.');
+				} else {
+					alert('Thành công');
+					//window.location.reload();
+				}
+			}
+		});
+	}
+	</script>
+	<div class="wrap">
+		<h2 class="dashicons-before dashicons-tickets">Thêm coupon mới</h2>
+		<div class="body_coupon">
+			<div id="nhymxu_coupon_notice"></div>
+			<div class="pure-form pure-form-aligned">
+				<fieldset>
+					<input type="hidden" id="input_couponid" value="<?=$default_data['id'];?>">
+					<div class="pure-control-group">
+						<label for="input_merchant">Merchant*</label>
+						<select id="input_merchant" required>
+							<?php foreach( $list_campains as $camp ): ?>
+							<option value="<?=$camp;?>" <?=( $camp == $default_data['type'] ) ? 'selected' : '';?>><?=$camp;?></option>
+							<?php endforeach; ?>
+						</select>
+						<span class="pure-form-message-inline">Bắt buộc</span>
+					</div>
+
+					<div class="pure-control-group">
+						<label for="input_title">Tiêu đề*</label>
+						<input id="input_title" type="text" placeholder="Tiêu đề" required value="<?=$default_data['title'];?>">
+						<span class="pure-form-message-inline">Bắt buộc</span>
+					</div>
+
+					<div class="pure-control-group">
+						<label for="input_code">Mã giảm giá</label>
+						<input id="input_code" type="text" placeholder="Mã giảm giá" value="<?=$default_data['code'];?>">
+					</div>
+
+					<div class="pure-control-group">
+						<label for="input_note">Ghi chú</label>
+						<input id="input_note" type="text" placeholder="Ghi chú" value="<?=$default_data['note'];?>">
+					</div>
+
+					<div class="pure-control-group">
+						<label for="input_url">Link đích*</label>
+						<input id="input_url" type="text" placeholder="Link đích" value="<?=$default_data['url'];?>" required>
+						<span class="pure-form-message-inline">Không nhập link affiliate ở đây</span>
+					</div>
+
+					<div class="pure-control-group">
+						<label for="input_save">Mô tả ngắn</label>
+						<input id="input_save" type="text" placeholder="Mô tả ngắn. VD: 500k" value="<?=$default_data['save'];?>">
+					</div>
+
+					<div class="pure-control-group">
+						<label for="input_exp">Ngày hết hạn*</label>
+						<input id="input_exp" type="date" placeholder="YYYY-MM-DD" required value="<?=$default_data['exp'];?>">
+					</div>
+
+					<div class="pure-controls">
+						<button onclick="nhymxu_coupon_exec();" class="pure-button pure-button-primary">Lưu</button>
+					</div>
+				</fieldset>
+			</div>
+		</div>
+	</div>
+	<?php
 	}
 
 	/*
