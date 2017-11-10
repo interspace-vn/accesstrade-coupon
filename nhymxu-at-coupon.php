@@ -660,9 +660,9 @@ class nhymxu_at_coupon_editor {
 }
 
 new nhymxu_at_coupon();
-new nhymxu_at_coupon_editor();
 
 if( is_admin() ) {
+	new nhymxu_at_coupon_editor();
 	require_once __DIR__ . '/coupons_list.php';
 	new nhymxu_at_coupon_admin();
 }
