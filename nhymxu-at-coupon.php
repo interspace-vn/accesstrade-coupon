@@ -639,7 +639,7 @@ class nhymxu_at_coupon_admin {
 	}
 	</script>
 	<div class="wrap">
-		<h2 class="dashicons-before dashicons-tickets">Thêm coupon mới</h2>
+		<h2 class="dashicons-before dashicons-tickets"><?=( isset($_GET['coupon_id']) && $_GET['coupon_id'] != '' ) ? 'Sửa thông tin coupon' : 'Thêm coupon mới';?></h2>
 		<div class="body_coupon">
 			<div id="nhymxu_coupon_notice"></div>
 			<div class="pure-form pure-form-aligned">
