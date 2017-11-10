@@ -88,7 +88,11 @@ class Nhymxu_AT_Coupon_List extends WP_List_Table
 		global $wpdb;
 
 		$sql = "SELECT id, title, type, exp, note, save FROM {$wpdb->prefix}coupons";
-		
+        
+        if( !empty( $_REQUEST['filter_merchant'] ) ) {
+            $sql .= ' WHERE type = "'. $_REQUEST['filter_merchant'] .'"';
+        }
+
 		if ( !empty( $_REQUEST['orderby'] ) ) {
 			$sql .= ' ORDER BY ' . esc_sql( $_REQUEST['orderby'] );
 			$sql .= ! empty( $_REQUEST['order'] ) ? ' ' . esc_sql( $_REQUEST['order'] ) : ' ASC';
