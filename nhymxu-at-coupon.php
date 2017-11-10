@@ -355,10 +355,8 @@ class nhymxu_at_coupon_admin {
 
 		if( $input['cid'] > 0 ) {
 			$result = $this->coupon_update( $input );
-			file_put_contents(WP_CONTENT_DIR . '/log.txt', 'update');
 		} else {
 			$result = $this->coupon_insert( $input );
-			file_put_contents(WP_CONTENT_DIR . '/log.txt', 'insert');
 		}
 
 		echo ( $result === false ) ? 0 : 1;
