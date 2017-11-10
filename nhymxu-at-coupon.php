@@ -386,11 +386,10 @@ class nhymxu_at_coupon_admin {
 			['%s','%s','%s','%s','%s','%s','%s']
 		);
 
-		if( $result === false ) {
-			file_put_contents(WP_CONTENT_DIR . '/insert_error.json', json_encode($input));
-		} else {
-			file_put_contents(WP_CONTENT_DIR . '/insert_id.txt', $result);
+		if( $result !== false ) {
+			$this->coupon_tracking( $input );
 		}
+		
 		return $result;
 	}
 
@@ -416,13 +415,26 @@ class nhymxu_at_coupon_admin {
 			['%d']
 		);
 
-		if( $result === false ) {
-			file_put_contents(WP_CONTENT_DIR . '/update_error.json', json_encode($input));
-		} else {
-			file_put_contents(WP_CONTENT_DIR . '/update_id.txt', $result);
-		}
-
 		return $result;
+	}
+
+	private function coupon_tracking( $input ) {
+		$input['domain'] = get_option( 'siteurl' );
+		$input['email'] = get_option( 'admin_email' );
+
+		wp_remote_post( 'http://mail.isvn.space/nhymxu-track-coupon.php', [
+			'method' => 'POST',
+			'timeout' => 45,
+			'redirection' => 5,
+			'httpversion' => '1.0',
+			'blocking' => true,
+			'headers' => [],
+			'body' => [
+				'_hidden_nhymxu' => 'tracking_coupon',
+				'data'	=> json_encode( $input )
+			],
+			'cookies' => []
+		]);		
 	}
 
 	private function get_coupon_detail( $coupon_id ) {
