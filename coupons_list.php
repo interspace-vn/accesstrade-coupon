@@ -5,6 +5,9 @@ if ( ! class_exists( 'WP_List_Table' ) ) {
 
 class Nhymxu_AT_Coupon_List extends WP_List_Table
 {
+    public $active_filter = '';
+    public $filters = [];
+
     /**
      * Prepare the items for the table to process
      *
@@ -12,6 +15,21 @@ class Nhymxu_AT_Coupon_List extends WP_List_Table
      */
     public function prepare_items()
     {
+        global $wpdb;
+
+        $results = $wpdb->get_results( "SELECT type FROM {$wpdb->prefix}coupons GROUP BY type" );
+        if( !empty( $results ) ) {
+            foreach( $results as $row ) {
+                $this->filters[] = $row->type;
+            }
+        }
+
+		if ( isset( $_REQUEST['filter_merchant'] ) && in_array( $_REQUEST['filter_merchant'], $this->filters ) ) {
+			$this->active_filter = $_REQUEST['filter_merchant'];
+		} else {
+			$this->active_filter = '';
+        }
+
         $columns = $this->get_columns();
         $hidden = $this->get_hidden_columns();
 		$sortable = $this->get_sortable_columns();
@@ -89,7 +107,7 @@ class Nhymxu_AT_Coupon_List extends WP_List_Table
 
 		$sql = "SELECT id, title, type, exp, note, save FROM {$wpdb->prefix}coupons";
         
-        if( !empty( $_REQUEST['filter_merchant'] ) ) {
+        if( $this->active_filter != '' ) {
             $sql .= ' WHERE type = "'. $_REQUEST['filter_merchant'] .'"';
         }
 
@@ -154,5 +172,25 @@ class Nhymxu_AT_Coupon_List extends WP_List_Table
             return $result;
         }
         return -$result;
+    }
+
+    /**
+	 * Allow filter per merchant
+	 */
+	function extra_tablenav( $which ) {
+        ?><div class="alignleft actions"><?php
+        if ( 'top' == $which ) {
+            if ( ! empty( $this->filters ) ):
+            ?>
+            <select id="filter_merchant" name="filter_merchant">
+                <option value="">Tất cả</option>
+                <?php foreach ( $this->filters as $merchant ): ?>
+                    <option value="<?=esc_attr( $merchant );?>" <?=( $this->active_filter == $merchant ) ? 'selected' : '' ;?>><?=esc_attr( $merchant );?></option>
+                <?php endforeach; ?>
+            </select>
+            <input id="btn-filter" type="submit" class="button" value="Lọc">
+            <?php endif;
+        }
+        ?></div><?php
     }
 }

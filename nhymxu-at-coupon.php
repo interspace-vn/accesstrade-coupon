@@ -702,6 +702,16 @@ class nhymxu_at_coupon_admin {
 		$coupon_list_table = new Nhymxu_AT_Coupon_List();
 		$coupon_list_table->prepare_items();
 	?>
+		<script type="text/javascript">
+		jQuery(document).ready(function($) {
+			$('#btn-filter').click(function() {
+				var merchant = $('#filter_merchant').val();
+				if( merchant !== '' ) {
+					window.location.href = window.location.href + '&filter_merchant=' + merchant;
+				} 
+			});
+		});
+		</script>
 		<div class="wrap">
 			<h2 class="dashicons-before dashicons-tickets">Coupons</h2>
 			<?php $coupon_list_table->display(); ?>
