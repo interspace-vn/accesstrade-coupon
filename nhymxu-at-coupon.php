@@ -676,7 +676,7 @@ class nhymxu_at_coupon_admin {
 					</div>
 
 					<div class="pure-control-group">
-						<label for="input_save">Mô tả ngắn</label>
+						<label for="input_save">Mức giảm giá</label>
 						<input id="input_save" type="text" placeholder="Mô tả ngắn. VD: 500k" value="<?=$default_data['save'];?>">
 					</div>
 
