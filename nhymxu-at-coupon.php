@@ -704,6 +704,11 @@ class nhymxu_at_coupon_admin {
 		$coupon_list_table = new Nhymxu_AT_Coupon_List();
 		$coupon_list_table->prepare_items();
 	?>
+		<style>
+		.wp-list-table .column-id {
+			width: 60px;
+		}
+		</style>
 		<script type="text/javascript">
 		jQuery(document).ready(function($) {
 			$('#btn-filter').click(function() {
