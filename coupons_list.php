@@ -185,7 +185,7 @@ class Nhymxu_AT_Coupon_List extends WP_List_Table
             if ( ! empty( $this->filters ) ):
             ?>
             <select id="filter_merchant" name="filter_merchant">
-                <option value="">Tất cả</option>
+                <option value="">Tất cả merchant</option>
                 <?php foreach ( $this->filters as $merchant ): ?>
                     <option value="<?=esc_attr( $merchant );?>" <?=( $this->active_filter == $merchant ) ? 'selected' : '' ;?>><?=esc_attr( $merchant );?></option>
                 <?php endforeach; ?>
