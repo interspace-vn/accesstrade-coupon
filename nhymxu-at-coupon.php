@@ -602,6 +602,14 @@ class nhymxu_at_coupon_admin {
 	?>
 	<link rel="stylesheet" href="//unpkg.com/purecss@1.0.0/build/forms-min.css">
 	<link rel="stylesheet" href="//unpkg.com/purecss@1.0.0/build/buttons-min.css">
+	<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.4/css/selectize.min.css">
+	<script src="//cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.4/js/standalone/selectize.min.js" type="text/javascript"></script>
+	<style>
+	div.selectize-control.single {
+		display: inline-block;
+		width: 222px;
+	}
+	</style>
 	<script type="text/javascript">
 	function nhymxu_coupon_exec() {
 		var jq = jQuery;
@@ -635,6 +643,12 @@ class nhymxu_at_coupon_admin {
 			}
 		});
 	}
+	jQuery(document).ready(function (){
+		jQuery('#input_merchant').selectize({
+			create: false,
+			sortField: 'text'
+		});
+	});
 	</script>
 	<div class="wrap">
 		<h2 class="dashicons-before dashicons-tickets"><?=( isset($_GET['coupon_id']) && $_GET['coupon_id'] != '' ) ? 'Sửa thông tin coupon' : 'Thêm coupon mới';?></h2>
