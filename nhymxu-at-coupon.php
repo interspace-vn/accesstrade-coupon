@@ -662,6 +662,7 @@ class nhymxu_at_coupon_admin {
 					<div class="pure-control-group">
 						<label for="input_code">Mã giảm giá</label>
 						<input id="input_code" type="text" placeholder="Mã giảm giá" value="<?=$default_data['code'];?>">
+						<span class="pure-form-message-inline">Tối đa 60 kí tự</span>
 					</div>
 
 					<div class="pure-control-group">
@@ -678,6 +679,7 @@ class nhymxu_at_coupon_admin {
 					<div class="pure-control-group">
 						<label for="input_save">Mức giảm giá</label>
 						<input id="input_save" type="text" placeholder="Mô tả ngắn. VD: 500k" value="<?=$default_data['save'];?>">
+						<span class="pure-form-message-inline">Tối đa 20 kí tự ( hiển thị tốt nhất dưới 4 kí tự )</span>
 					</div>
 
 					<div class="pure-control-group">
@@ -713,7 +715,9 @@ class nhymxu_at_coupon_admin {
 		});
 		</script>
 		<div class="wrap">
-			<h2 class="dashicons-before dashicons-tickets">Coupons</h2>
+			<h1 class="dashicons-before dashicons-tickets wp-heading-inline">Coupons</h1>
+ 			<a href="<?=admin_url( 'admin.php?page=accesstrade_coupon_addnew' );?>" class="page-title-action">Thêm mới</a>
+			<hr class="wp-header-end">
 			<?php $coupon_list_table->display(); ?>
 		</div>
 	<?php
