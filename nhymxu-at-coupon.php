@@ -708,6 +708,18 @@ class nhymxu_at_coupon_admin {
 		.wp-list-table .column-id {
 			width: 60px;
 		}
+		.wp-list-table .column-save {
+			width: 66px;
+		}
+		.wp-list-table .column-exp {
+			width: 120px;
+		}
+		.wp-list-table .column-note {
+			width: 200px;
+		}
+		.wp-list-table .column-code, .wp-list-table .column-type {
+			width: 100px;
+		}
 		</style>
 		<script type="text/javascript">
 		jQuery(document).ready(function($) {
