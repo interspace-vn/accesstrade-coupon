@@ -66,7 +66,8 @@ class Nhymxu_AT_Coupon_List extends WP_List_Table
         $columns = [
             'id'        => 'ID',
 			'title'     => 'Tiêu đề',
-			'type'		=> 'Merchant',
+            'type'		=> 'Merchant',
+            'code'      => 'Mã giảm giá',
 			'exp'		=> 'Ngày hết hạn',
 			'note'		=> 'Ghi chú',
 			'save'		=> 'Giảm'
@@ -105,7 +106,7 @@ class Nhymxu_AT_Coupon_List extends WP_List_Table
     {
 		global $wpdb;
 
-		$sql = "SELECT id, title, type, exp, note, save FROM {$wpdb->prefix}coupons";
+		$sql = "SELECT id, title, type, code, exp, note, save FROM {$wpdb->prefix}coupons";
         
         if( $this->active_filter != '' ) {
             $sql .= ' WHERE type = "'. $_REQUEST['filter_merchant'] .'"';
@@ -136,7 +137,8 @@ class Nhymxu_AT_Coupon_List extends WP_List_Table
         switch( $column_name ) {
             case 'id':
                 return '<a href="'. admin_url('admin.php?page=accesstrade_coupon_addnew&coupon_id='.$item[$column_name])  .'">'. $item[$column_name] .'</a>';
-			case 'title':
+            case 'title':
+            case 'code':
 			case 'type':
 			case 'exp':
 			case 'note':
