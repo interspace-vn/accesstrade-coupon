@@ -463,6 +463,7 @@ class nhymxu_at_coupon_admin {
 		if( isset( $_POST, $_POST['nhymxu_hidden'] ) && $_POST['nhymxu_hidden'] == 'coupon' ) {
 			$input = [
 				'uid'	=> sanitize_text_field($_REQUEST['nhymxu_at_coupon_uid']),
+				'accesskey'	=> sanitize_text_field($_REQUEST['nhymxu_at_coupon_accesskey']),
 				'utmsource'	=> sanitize_text_field($_REQUEST['nhymxu_at_coupon_utmsource'])
 			];
 	
@@ -492,20 +493,32 @@ class nhymxu_at_coupon_admin {
 		<div>
 			<h2>Cài đặt AccessTrade Coupon</h2>
 			<br>
+			<?php if( !isset($option['uid'], $option['accesskey']) ): ?>
+			<h3>Bạn cần nhập AccessTrade ID và Access Key để plugin hoạt động tốt.</h3>
+			<br>
+			<?php endif; ?>
 			<form action="<?=admin_url( 'admin.php?page=accesstrade_coupon_settings' );?>" method="post">
 				<input type="hidden" name="nhymxu_hidden" value="coupon">
 				<table>
 					<tr>
 						<td>AccessTrade ID*:</td>
-						<td><input type="text" name="nhymxu_at_coupon_uid" value="<?=$option['uid'];?>"></td>
+						<td><input type="text" name="nhymxu_at_coupon_uid" value="<?=(isset($option['uid'])) ? $option['uid'] : '';?>"></td>
 					</tr>
 					<tr>
 						<td></td>
 						<td>Lấy ID tại <a href="https://pub.accesstrade.vn/tools/deep_link" target="_blank">đây</a></td>
 					</tr>
 					<tr>
+						<td>Access Key*:</td>
+						<td><input type="text" name="nhymxu_at_coupon_accesskey" value="<?=(isset($option['accesskey'])) ? $option['accesskey'] : '';?>"></td>
+					</tr>
+					<tr>
+						<td></td>
+						<td>Lấy Access Key tại <a href="https://pub.accesstrade.vn/accounts/profile" target="_blank">đây</a></td>
+					</tr>
+					<tr>
 						<td>UTM Source:</td>
-						<td><input type="text" name="nhymxu_at_coupon_utmsource" value="<?=$option['utmsource'];?>"></td>
+						<td><input type="text" name="nhymxu_at_coupon_utmsource" value="<?=(isset($option['utmsource'])) ? $option['utmsource'] : '';?>"></td>
 					</tr>
 				</table>
 				<input name="Submit" type="submit" value="Lưu">
