@@ -610,6 +610,12 @@ class nhymxu_at_coupon_admin {
 				- <button id="nhymxu_force_update" data-run="0" onclick="nhymxu_force_update_coupons();">Cập nhật ngay</button>
 				<?php endif; ?>
 			</p>
+			<?php $active_merchants = get_option('nhymxu_at_coupon_merchants', false); ?>
+			<?php if( $active_merchants ): ?>
+			<p>
+				Bạn có <?=count($active_merchants);?> campain đang hoạt động. <button id="nhymxu_force_update_merchants" data-run="0" onclick="nhymxu_force_update_merchants();">Cập nhật campain ngay</button>
+			</p>
+			<?php endif;?>
 		</div>
 		<?php
 	}
@@ -795,6 +801,19 @@ class nhymxu_at_coupon_admin {
 				var merchant = $('#filter_merchant').val();
 				if( merchant !== '' ) {
 					window.location.href = window.location.href + '&filter_merchant=' + merchant;
+				} 
+			});
+			$('#doaction').click(function() {
+				var action = $('#bulk-action-selector-top').val();
+				if( action == 'bulk-delete' ) {
+					var bulk_id = [];
+					$('.input_coupon_bulk_action').each(function() {
+						if( $(this).is(':checked') ) {
+							//console.log( $(this).val() );
+							bulk_id.push( $(this).val() );
+						} 
+						console.log(bulk_id);
+					});
 				} 
 			});
 		});

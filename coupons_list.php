@@ -17,6 +17,13 @@ class Nhymxu_AT_Coupon_List extends WP_List_Table
     {
         global $wpdb;
 
+        $user_search_key = isset( $_REQUEST['s'] ) ? wp_unslash( trim( $_REQUEST['s'] ) ) : '';
+
+        $columns = $this->get_columns();
+        $hidden = $this->get_hidden_columns();
+		$sortable = $this->get_sortable_columns();
+
+        // Get filters data
         $results = $wpdb->get_results( "SELECT type FROM {$wpdb->prefix}coupons GROUP BY type" );
         if( !empty( $results ) ) {
             foreach( $results as $row ) {
@@ -29,11 +36,8 @@ class Nhymxu_AT_Coupon_List extends WP_List_Table
 		} else {
 			$this->active_filter = '';
         }
+        // END Get filters data
 
-        $columns = $this->get_columns();
-        $hidden = $this->get_hidden_columns();
-		$sortable = $this->get_sortable_columns();
-		
 		$perPage = 50;
         $currentPage = $this->get_pagenum();
 
@@ -64,7 +68,7 @@ class Nhymxu_AT_Coupon_List extends WP_List_Table
     public function get_columns()
     {
         $columns = [
-            'id'        => 'ID',
+            'cb'        => '<input type="checkbox">',
 			'title'     => 'Tiêu đề',
             'type'		=> 'Merchant',
             'code'      => 'Mã giảm giá',
@@ -92,7 +96,6 @@ class Nhymxu_AT_Coupon_List extends WP_List_Table
     {
         return [
 			'title' => ['title', false],
-			'id' => ['id', false],
 			'type' => ['type', false],
 			'exp' => ['exp', false],
 		];
@@ -135,8 +138,6 @@ class Nhymxu_AT_Coupon_List extends WP_List_Table
     public function column_default( $item, $column_name )
     {
         switch( $column_name ) {
-            case 'id':
-                return '<a href="'. admin_url('admin.php?page=accesstrade_coupon_addnew&coupon_id='.$item[$column_name])  .'">'. $item[$column_name] .'</a>';
             case 'title':
             case 'code':
 			case 'type':
@@ -194,5 +195,51 @@ class Nhymxu_AT_Coupon_List extends WP_List_Table
             <?php endif;
         }
         ?></div><?php
+    }
+
+    /**
+     * Get value for checkbox column.
+     *
+     * @param object $item  A row's data.
+     * @return string Text to be placed inside the column <td>.
+     */
+    protected function column_cb( $item ) {
+        return sprintf(		
+            '<label class="screen-reader-text" for="coupon_' . $item['id'] . '">' . sprintf( __( 'Select %s' ), $item['title'] ) . '</label>'
+            . "<input type='checkbox' class='input_coupon_bulk_action' name='coupons[]' id='coupon_{$item['id']}' value='{$item['id']}' />"					
+        );
+    }
+
+
+    public function get_bulk_actions() {
+        return [];
+        /*
+        * on hitting apply in bulk actions the url paramas are set as
+        * ?action=bulk-delete&paged=1&action2=-1
+        * 
+        * action and action2 are set based on the triggers above and below the table		 		    
+        */
+        $actions = ['bulk-delete' => 'Xóa coupon'];
+        return $actions;
+    }
+
+    /*
+    * Method for rendering the title column.
+    * Adds row action links to the title column.
+    * e.g. url/admin.php?page=accesstrade_coupon_addnew&coupon_id=1
+    */
+    protected function column_title( $item ) {		
+        $admin_page_url =  admin_url('admin.php');
+        // row action to view usermeta.
+        $query_args_editcoupon = array(
+            'page'		=>  wp_unslash( 'accesstrade_coupon_addnew' ),
+            'coupon_id'	=> absint( $item['id']),
+        );
+        $editcoupon_link = esc_url( add_query_arg( $query_args_editcoupon, $admin_page_url ) );		
+        $actions['edit_coupon'] = '<a href="' . $editcoupon_link . '">Sửa</a>';		
+        // similarly add row actions for add usermeta.
+        //$_GET$row_value = '<strong>' . $item['title'] . '</strong>';
+        $row_value = $item['title'];        
+        return $row_value . $this->row_actions( $actions );
     }
 }
