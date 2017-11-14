@@ -208,10 +208,9 @@ class Nhymxu_AT_Coupon_List extends WP_List_Table
      * @return string Text to be placed inside the column <td>.
      */
     protected function column_cb( $item ) {
-        return sprintf(		
-            '<label class="screen-reader-text" for="coupon_' . $item['id'] . '">' . sprintf( __( 'Select %s' ), $item['title'] ) . '</label>'
-            . "<input type='checkbox' class='input_coupon_bulk_action' name='coupons[]' id='coupon_{$item['id']}' value='{$item['id']}' />"					
-        );
+        $output = '<label class="screen-reader-text" for="coupon_' . $item['id'] . '">Chọn' . $item['title'] . '</label>';
+        $output .= '<input type="checkbox" class="input_coupon_bulk_action" name="coupons[]" id="coupon_'. $item['id'] .'" value="'. $item['id'] .'">';
+        return $output;
     }
 
 
