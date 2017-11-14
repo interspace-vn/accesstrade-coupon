@@ -624,23 +624,13 @@ class nhymxu_at_coupon_admin {
 	 * Admin page add new
 	 */
 	public function admin_page_callback_addnew() {
-		$list_campains = [
-			"mykingdom","daonuan","fadovn","bookingcom","klookvn","canifa","dunlopsport","agodacj","fiditour",
-			"agodamobile","foodfest2","hnammobile","vuabia","benthanhtourist","talentvn","tokopediaindo",
-			"blanjaindo","pnj","lazadaind","uber_rider","central_th","camdonhanh","dichungtaxi",
-			"lazada","mytourapi","pvfc","sonicecompany.myharavan.com",
-			"gotadifne","sonice","vinaphone","vpbankcard",
-			"foodizzi","pubokid","konvy","lychee",
-			"doctordong","aeon.myharavan.com","queenie",
-			"eropi","ubernew","robins","lanuong","leflair",
-			"lottevn","ferosh","ucancook","insulac",
-			"alapro","cliptv","vietravel","redcat","zcom",
-			"divui","gotadi","sacombank","fptshop","vtcacademy",
-			"access-ec.myharavan.com","sendovn","tugo","atadi","vntrip",
-			"california","vienthonga","adayroi","fpt","careerbuilder",
-			"kyna","begodi","citibank","vinabook","mktteam","viviane","ivivu",
-			"nguyenkimvn","bookin","yes24vn","mytourvn"
-		];
+
+		$active_merchants = get_option('nhymxu_at_coupon_merchants', false);
+
+		if( !$active_merchants ) {
+			echo 'Chưa có campain nào được duyệt ( hoặc chưa đồng bộ ). vui lòng đồng bộ campain lại ở <a href="'. admin_url('admin.php?page=accesstrade_coupon_settings') .'">đây</a>';
+			return false;
+		} 
 
 		$default_data = [
 			'id'	=> 0,
@@ -667,7 +657,7 @@ class nhymxu_at_coupon_admin {
 	<style>
 	div.selectize-control.single {
 		display: inline-block;
-		width: 222px;
+		/*width: 222px;*/
 	}
 	</style>
 	<script type="text/javascript">
@@ -720,8 +710,8 @@ class nhymxu_at_coupon_admin {
 					<div class="pure-control-group">
 						<label for="input_merchant">Merchant*</label>
 						<select id="input_merchant" required>
-							<?php foreach( $list_campains as $camp ): ?>
-							<option value="<?=$camp;?>" <?=( $camp == $default_data['type'] ) ? 'selected' : '';?>><?=$camp;?></option>
+							<?php foreach( $active_merchants as $slug => $title ): ?>
+							<option value="<?=$slug;?>" <?=( $slug == $default_data['type'] ) ? 'selected' : '';?>><?=$title;?></option>
 							<?php endforeach; ?>
 						</select>
 						<span class="pure-form-message-inline">Bắt buộc</span>
