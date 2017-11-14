@@ -57,6 +57,10 @@ class Nhymxu_AT_Coupon_List extends WP_List_Table
 	private function get_number_of_records() {
 		global $wpdb;
 
+        if( $this->active_filter != '' ) {
+            return $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->prefix}coupons WHERE type = '{$this->active_filter}'" );
+        }
+
 		return $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->prefix}coupons" );
 	}
 
