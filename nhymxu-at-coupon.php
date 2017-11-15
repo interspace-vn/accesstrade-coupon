@@ -661,7 +661,13 @@ class nhymxu_at_coupon_admin {
 	}
 	</style>
 	<script type="text/javascript">
-	function nhymxu_coupon_exec() {
+	/*
+	 * Insert coupon
+	 * @args action_type	int
+	 *		0: insert once
+	 *		1: insert more
+	 */
+	function nhymxu_coupon_exec( action_type ) {
 		var jq = jQuery;
 		var input = {
 			cid: jq('#input_couponid').val(),
@@ -688,7 +694,10 @@ class nhymxu_at_coupon_admin {
 					alert('Xử lý thất bại. Vui lòng thử lại.');
 				} else {
 					alert('Thành công');
-					//window.location.reload();
+					if( action_type === 0 ) {
+						window.location.href = '<?=admin_url('admin.php?page=accesstrade_coupon');?>';
+					} else if ( action_type === 1 )
+						window.location.reload();
 				}
 			}
 		});
@@ -709,7 +718,8 @@ class nhymxu_at_coupon_admin {
 					<input type="hidden" id="input_couponid" value="<?=$default_data['id'];?>">
 					<div class="pure-control-group">
 						<label for="input_merchant">Merchant*</label>
-						<select id="input_merchant" required>
+						<select id="input_merchant" required autocomplete="off">
+							<option value="">---Chọn merchant---</option>
 							<?php foreach( $active_merchants as $slug => $title ): ?>
 							<option value="<?=$slug;?>" <?=( $slug == $default_data['type'] ) ? 'selected' : '';?>><?=$title;?></option>
 							<?php endforeach; ?>
@@ -719,40 +729,41 @@ class nhymxu_at_coupon_admin {
 
 					<div class="pure-control-group">
 						<label for="input_title">Tiêu đề*</label>
-						<input id="input_title" type="text" placeholder="Tiêu đề" required value="<?=$default_data['title'];?>">
+						<input id="input_title" type="text" placeholder="Tiêu đề" required value="<?=$default_data['title'];?>" autocomplete="off">
 						<span class="pure-form-message-inline">Bắt buộc</span>
 					</div>
 
 					<div class="pure-control-group">
 						<label for="input_code">Mã giảm giá</label>
-						<input id="input_code" type="text" placeholder="Mã giảm giá" value="<?=$default_data['code'];?>">
+						<input id="input_code" type="text" placeholder="Mã giảm giá" value="<?=$default_data['code'];?>" autocomplete="off">
 						<span class="pure-form-message-inline">Tối đa 60 kí tự</span>
 					</div>
 
 					<div class="pure-control-group">
 						<label for="input_note">Ghi chú</label>
-						<input id="input_note" type="text" placeholder="Ghi chú" value="<?=$default_data['note'];?>">
+						<input id="input_note" type="text" placeholder="Ghi chú" value="<?=$default_data['note'];?>" autocomplete="off">
 					</div>
 
 					<div class="pure-control-group">
 						<label for="input_url">Link đích*</label>
-						<input id="input_url" type="text" placeholder="Link đích" value="<?=$default_data['url'];?>" required>
+						<input id="input_url" type="text" placeholder="Link đích" value="<?=$default_data['url'];?>" required autocomplete="off">
 						<span class="pure-form-message-inline">Không nhập link affiliate ở đây</span>
 					</div>
 
 					<div class="pure-control-group">
 						<label for="input_save">Mức giảm giá</label>
-						<input id="input_save" type="text" placeholder="Mô tả ngắn. VD: 500k" value="<?=$default_data['save'];?>">
+						<input id="input_save" type="text" placeholder="Mô tả ngắn. VD: 500k" value="<?=$default_data['save'];?>" autocomplete="off">
 						<span class="pure-form-message-inline">Tối đa 20 kí tự ( hiển thị tốt nhất dưới 4 kí tự )</span>
 					</div>
 
 					<div class="pure-control-group">
 						<label for="input_exp">Ngày hết hạn*</label>
-						<input id="input_exp" type="date" placeholder="YYYY-MM-DD" required value="<?=$default_data['exp'];?>">
+						<input id="input_exp" type="date" placeholder="YYYY-MM-DD" required value="<?=$default_data['exp'];?>" autocomplete="off">
 					</div>
 
 					<div class="pure-controls">
-						<button onclick="nhymxu_coupon_exec();" class="pure-button pure-button-primary">Lưu</button>
+						<button onclick="nhymxu_coupon_exec(0);" class="pure-button pure-button-primary">Lưu coupon</button>
+						<button onclick="nhymxu_coupon_exec(1);" class="pure-button pure-button-primary">Lưu và thêm coupon mới</button>
 					</div>
 				</fieldset>
 			</div>
