@@ -328,6 +328,10 @@ class nhymxu_at_coupon_admin {
 	 *		0: insert once
 	 *		1: insert more
 	 */
+	function nhymxu_insert_log( msg ) {
+		jQuery('#nhymxu_coupon_notice').html(msg);
+	}
+
 	function nhymxu_coupon_exec( action_type ) {
 		var jq = jQuery;
 		var input = {
@@ -342,14 +346,19 @@ class nhymxu_at_coupon_admin {
 		};
 
 		if( input['merchant'] === '' || input['title'] === '' || input['url'] === '' || input['exp'] === '' ) {
-			jq('#nhymxu_coupon_notice').html('Nhập đủ các mục bắt buộc!');
+			nhymxu_insert_log('Nhập đủ các mục bắt buộc!');
 			return false;
 		}
 
 		var today = new Date();
 		var expired = new Date( input['exp'] );
-		if( +expired < +today ) {
-			jq('#nhymxu_coupon_notice').html('Chọn ngày hết hạn phải sau hôm nay.');
+		if( +expired <= +today ) {
+			nhymxu_insert_log('Chọn ngày hết hạn phải từ hôm nay.');
+			return false;
+		}
+
+		if( input['save'].length > 5 ) {
+			nhymxu_insert_log('Mức giảm giá phải dưới 6 kí tự.');
 			return false;
 		} 
 
@@ -449,7 +458,7 @@ class nhymxu_at_coupon_admin {
 					<div class="pure-control-group">
 						<label for="input_save">Mức giảm giá</label>
 						<input id="input_save" type="text" placeholder="Mô tả ngắn. VD: 500k" value="<?=$default_data['save'];?>" autocomplete="off">
-						<span class="pure-form-message-inline">Tối đa 20 kí tự ( hiển thị tốt nhất dưới 4 kí tự )</span>
+						<span class="pure-form-message-inline">Tối đa 5 kí tự</span>
 					</div>
 
 					<div class="pure-control-group">
