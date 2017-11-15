@@ -30,6 +30,7 @@ class nhymxu_at_coupon {
 		add_shortcode( 'atcoupon', [$this,'shortcode_callback'] );
 		add_action( 'init', [$this, 'init_updater'] );
 		add_action( 'wp_ajax_nhymxu_coupons_ajax_forceupdate', [$this, 'ajax_force_update'] );
+		add_action( 'wp_ajax_nhymxu_coupons_ajax_forceupdate_merchants', [$this, 'ajax_force_update_merchants'] );
 	}
 	
 	public function do_this_twicedaily() {
@@ -283,6 +284,15 @@ class nhymxu_at_coupon {
 		$this->do_this_twicedaily();
 		echo 'running';
 		wp_die();
+	}
+
+	/*
+	 * Force update merchant list from server
+	 */
+	public function ajax_force_update_merchants() {
+		$this->do_this_daily();
+		echo 'running';
+		wp_die();		
 	}
 
 	public function allow_external_update_host( $allow, $host, $url ) {
@@ -568,6 +578,22 @@ class nhymxu_at_coupon_admin {
 				}
 			});
 		}
+		function nhymxu_force_update_merchants() {
+			var is_run = jQuery('#nhymxu_force_update_merchants').data('run');
+			if( is_run !== 0 ) {
+				console.log('Đã chạy rồi');
+				return false;
+			} 
+			jQuery('#nhymxu_force_update_merchants').attr('disabled', 'disabled');
+			jQuery.ajax({
+				type: "POST",
+				url: ajaxurl,
+				data: { action: 'nhymxu_coupons_ajax_forceupdate_merchants' },
+				success: function(response) {
+					alert('Khởi chạy thành công. Vui lòng đợi vài phút để dữ liệu được cập nhật.');
+				}
+			});
+		}
 		</script>
 		<div>
 			<h2>Cài đặt AccessTrade Coupon</h2>
@@ -695,7 +721,7 @@ class nhymxu_at_coupon_admin {
 	<style>
 	div.selectize-control.single {
 		display: inline-block;
-		/*width: 222px;*/
+		min-width: 250px;
 	}
 	</style>
 	<script type="text/javascript">
