@@ -387,6 +387,7 @@ class nhymxu_at_coupon_admin {
 	public function __construct() {
 		add_action( 'admin_menu', [$this,'admin_page'] );
 		add_action( 'wp_ajax_nhymxu_coupons_ajax_insertupdate', [$this, 'ajax_insert_update'] );
+		add_action( 'wp_ajax_nhymxu_coupons_ajax_checkcoupon', [$this, 'ajax_check_coupon'] );		
 	}
 
 	public function ajax_insert_update() {
@@ -401,6 +402,33 @@ class nhymxu_at_coupon_admin {
 		}
 
 		echo ( $result === false ) ? 0 : 1;
+
+		wp_die();
+	}
+
+	public function ajax_check_coupon() {
+		global $wpdb;
+
+		$input = $_POST['coupon_data'];
+
+		$code = ($input['code']) ? $input['code'] : '';
+		$url = ($input['url']) ? $input['url'] : '';
+		$title = $input['title'];
+
+		if( $code != '' ) {
+			$sql = "SELECT * FROM {$wpdb->prefix}coupons WHERE code = '{$code}' AND url = '{$url}'";
+		} else {
+			$sql = "SELECT * FROM {$wpdb->prefix}coupons WHERE title = '{$title}'";
+		}
+
+		$coupon = $wpdb->get_row($sql);
+
+		if ( null !== $coupon ) {
+			echo 'found';
+		} else {
+			$result = $this->coupon_insert( $input );
+			echo ( $result === false ) ? 0 : 1;
+		}
 
 		wp_die();
 	}
@@ -685,23 +713,51 @@ class nhymxu_at_coupon_admin {
 			return false;
 		}
 
-		jQuery.ajax({
+		function exec_after_success() {
+			if( action_type === 0 ) {
+				window.location.href = '<?=admin_url('admin.php?page=accesstrade_coupon');?>';
+			} else if ( action_type === 1 ) {
+				window.location.reload();
+			}
+		}
+
+		function ajax_database_exec() {
+			jQuery.ajax({
+				type: "POST",
+				url: ajaxurl,
+				data: { action: 'nhymxu_coupons_ajax_insertupdate', coupon_data: input },
+				success: function(response) {
+					if( response == 'found' ) {
+						alert('Xử lý thất bại. Vui lòng thử lại.');
+					} else {
+						alert('Thành công');
+						exec_after_success();
+					}
+				}
+			});
+		}
+
+		if( input['cid'] > 0 ) {
+			ajax_database_exec();
+		} else {
+			jQuery.ajax({
 			type: "POST",
 			url: ajaxurl,
-			data: { action: 'nhymxu_coupons_ajax_insertupdate', coupon_data: input },
+			data: { action: 'nhymxu_coupons_ajax_checkcoupon', coupon_data: input },
 			success: function(response) {
-				if( response == 0 ) {
+				if( response == 'found' ) {
+					alert('Đã tồn tại coupon.');
+				} else if( response == 0 ) {
 					alert('Xử lý thất bại. Vui lòng thử lại.');
 				} else {
 					alert('Thành công');
-					if( action_type === 0 ) {
-						window.location.href = '<?=admin_url('admin.php?page=accesstrade_coupon');?>';
-					} else if ( action_type === 1 )
-						window.location.reload();
+					exec_after_success();
 				}
-			}
+			}			
 		});
+		}
 	}
+
 	jQuery(document).ready(function (){
 		jQuery('#input_merchant').selectize({
 			create: false,
