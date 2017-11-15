@@ -403,7 +403,7 @@ class nhymxu_at_coupon {
 	}
 }
 
-new nhymxu_at_coupon();
+$nhymxu_at_coupon = new nhymxu_at_coupon();
 
 if( is_admin() ) {
 	require_once __DIR__ . '/admin.php';
