@@ -316,12 +316,12 @@ class nhymxu_at_coupon {
 			$wpdb->prefix . 'coupons',
 			[
 				'type'	=> $data['merchant'],
-				'title' => $data['title'],
-				'code'	=> ($data['coupon_code']) ? $data['coupon_code'] : '',
+				'title' => trim($data['title']),
+				'code'	=> ($data['coupon_code']) ? trim($data['coupon_code']) : '',
 				'exp'	=> $data['date_end'],
-				'note'	=> $data['coupon_desc'],
-				'url'	=> ($data['link']) ? $data['link'] : '',
-				'save'	=> ($data['coupon_save']) ? $data['coupon_save'] : ''
+				'note'	=> trim($data['coupon_desc']),
+				'url'	=> ($data['link']) ? trim($data['link']) : '',
+				'save'	=> ($data['coupon_save']) ? trim($data['coupon_save']) : ''
 			],
 			['%s','%s','%s','%s','%s','%s','%s']
 		);
@@ -362,7 +362,8 @@ class nhymxu_at_coupon {
 		$cat_id = [];
 	
 		foreach( $input as $row ) {
-			$result = $wpdb->get_row("SELECT * FROM {$wpdb->prefix}coupon_categories WHERE slug = '{$row['slug']}'");
+			$slug = trim($row['slug']);
+			$result = $wpdb->get_row("SELECT * FROM {$wpdb->prefix}coupon_categories WHERE slug = '{$slug}'");
 			
 			if( $result ) {
 				$cat_id[] = (int) $result->id;
@@ -370,8 +371,8 @@ class nhymxu_at_coupon {
 				$result = $wpdb->insert(
 					$wpdb->prefix . 'coupon_categories',
 					[
-						'name'	=> $row['title'],
-						'slug'	=> $row['slug']
+						'name'	=> trim($row['title']),
+						'slug'	=> trim($row['slug'])
 					],
 					['%s', '%s']
 				);
