@@ -14,6 +14,15 @@ define('NHYMXU_AT_COUPON_VER', '0.2.0');
 date_default_timezone_set('Asia/Ho_Chi_Minh');
 
 class nhymxu_at_coupon {
+
+	private $ignore_campains = [
+		'lazadacashback',
+		'uber_rider',
+		'ubernew',
+		'agodamobile',
+		'lazadaapp',
+	];
+
 	public function __construct() {
 		add_filter( 'http_request_host_is_external', [$this, 'allow_external_update_host'], 10, 3 );
 		add_action( 'nhymxu_at_coupon_sync_event', [$this,'do_this_twicedaily'] );
@@ -97,7 +106,7 @@ class nhymxu_at_coupon {
 			if( !empty($input) && isset( $input['data'] ) && is_array( $input['data'] ) ) {
 				$prepare_data = [];
 				foreach( $input['data'] as $campain ) {
-					if( $campain['approval'] == 'successful' ) {
+					if( $campain['approval'] == 'successful' && $campain['scope'] == 'public' && !in_array( $campain['merchant'], $this->ignore_campains ) ) {
 						$prepare_data[$campain['merchant']] = $campain['name'];
 					}
 				}
