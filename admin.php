@@ -346,6 +346,13 @@ class nhymxu_at_coupon_admin {
 			return false;
 		}
 
+		var today = new Date();
+		var expired = new Date( input['exp'] );
+		if( +expired < +today ) {
+			jq('#nhymxu_coupon_notice').html('Chọn ngày hết hạn phải sau hôm nay.');
+			return false;
+		} 
+
 		function exec_after_success() {
 			if( action_type === 0 ) {
 				window.location.href = '<?=admin_url('admin.php?page=accesstrade_coupon');?>';
