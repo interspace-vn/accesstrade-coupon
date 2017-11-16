@@ -240,6 +240,7 @@ class Nhymxu_AT_Coupon_List extends WP_List_Table
         );
         $editcoupon_link = esc_url( add_query_arg( $query_args_editcoupon, $admin_page_url ) );		
         $actions['edit_coupon'] = '<a href="' . $editcoupon_link . '">Sửa</a>';		
+        $actions['delete_coupon'] = '<a href="javascript:void(0);" onclick="nhymxu_delete_coupon(\''. $item['id'] .'\', \''. $item['code'] .'\');">Xóa</a>';
         // similarly add row actions for add usermeta.
         //$_GET$row_value = '<strong>' . $item['title'] . '</strong>';
         $row_value = $item['title'];        

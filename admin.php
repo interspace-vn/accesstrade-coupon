@@ -4,7 +4,8 @@ class nhymxu_at_coupon_admin {
 	public function __construct() {
 		add_action( 'admin_menu', [$this,'admin_page'] );
 		add_action( 'wp_ajax_nhymxu_coupons_ajax_insertupdate', [$this, 'ajax_insert_update'] );
-		add_action( 'wp_ajax_nhymxu_coupons_ajax_checkcoupon', [$this, 'ajax_check_coupon'] );		
+		add_action( 'wp_ajax_nhymxu_coupons_ajax_checkcoupon', [$this, 'ajax_check_coupon'] );
+		add_action( 'wp_ajax_nhymxu_coupons_ajax_deletecoupon', [$this, 'ajax_delete_coupon'] );	
 	}
 
 	public function ajax_insert_update() {
@@ -47,6 +48,31 @@ class nhymxu_at_coupon_admin {
 			echo ( $result === false ) ? 0 : 1;
 		}
 
+		wp_die();
+	}
+
+	public function ajax_delete_coupon() {
+		global $wpdb;
+
+		$input = $_POST['coupon_data'];
+
+		$id = ($_POST['cid']) ? $_POST['cid'] : '';
+
+		if( $id == '' ) {
+			echo 'not_found';
+			wp_die();
+		}
+
+		$wpdb->query("START TRANSACTION;");
+		try {
+			$wpdb->delete( $wpdb->prefix . 'coupons', ['id' => $id] );
+			$wpdb->delete( $wpdb->prefix . 'coupon_category_rel', ['coupon_id' => $id] );
+			$wpdb->query("COMMIT;");
+			echo 'ok';
+		} catch ( Exception $e ) {
+			$wpdb->query("ROLLBACK;");
+			echo 'fail';
+		}
 		wp_die();
 	}
 
@@ -175,6 +201,7 @@ class nhymxu_at_coupon_admin {
 				}
 			});
 		}
+
 		function nhymxu_force_update_merchants() {
 			var is_run = jQuery('#nhymxu_force_update_merchants').data('run');
 			if( is_run !== 0 ) {
@@ -502,6 +529,31 @@ class nhymxu_at_coupon_admin {
 		}
 		</style>
 		<script type="text/javascript">
+		function nhymxu_delete_coupon( coupon_id, code ) {
+			var answer = confirm('Xóa ID: '+ coupon_id +' - Code: "'+ code +'"?');
+			if (answer == true) {
+				jQuery.ajax({
+					type: "POST",
+					url: ajaxurl,
+					data: { action: 'nhymxu_coupons_ajax_deletecoupon', cid: coupon_id },
+					success: function( resp ) {
+						resp = jQuery.trim(resp);
+						if( resp == 'not_found' ) {
+							alert('Không có coupon ID');
+						} else if( resp == 'fail' ) {
+							alert( 'Xóa thất bại. vui lòng F5 và thử lại.' );
+						} else {
+							jQuery('#coupon_'+coupon_id).parent().parent().remove();
+							alert( 'Xóa thành công!' );
+						}
+						return true;
+					}
+				});
+			}
+			
+			return false;
+		}
+		
 		jQuery(document).ready(function($) {
 			$('#btn-filter').click(function() {
 				var merchant = $('#filter_merchant').val();
