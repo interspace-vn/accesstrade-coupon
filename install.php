@@ -67,6 +67,15 @@ class nhymxu_at_coupon_install {
 	public static function drop_table() {
 		global $wpdb;
 
+		$wpdb->query("DELETE FROM {$wpdb->prefix}coupons");
+		$wpdb->query("DELETE FROM {$wpdb->prefix}coupon_categories");
+		$wpdb->query("DELETE FROM {$wpdb->prefix}coupon_category_rel");
+		$wpdb->query("DELETE FROM {$wpdb->prefix}coupon_logs");
+
+		$wpdb->query("ALTER TABLE {$wpdb->prefix}coupons AUTO_INCREMENT = 1");
+		$wpdb->query("ALTER TABLE {$wpdb->prefix}coupon_categories AUTO_INCREMENT = 1");
+		$wpdb->query("ALTER TABLE {$wpdb->prefix}coupon_logs AUTO_INCREMENT = 1");
+
 		$wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}coupons");
 		$wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}coupon_categories");
 		$wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}coupon_category_rel");
