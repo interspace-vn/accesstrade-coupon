@@ -10,7 +10,7 @@ class nhymxu_at_coupon_admin {
 	}
 
 	function wp_strip_referer() {
-		if (is_admin() && ($_GET['page'] == "accesstrade_coupon")) {
+		if (is_admin() && isset($_GET['page']) && ($_GET['page'] == "accesstrade_coupon")) {
 			if (strpos($_SERVER['REQUEST_URI'], '_wp_http_referer') !== false) {
 				wp_redirect( remove_query_arg( array( '_wp_http_referer', '_wpnonce' ), stripslashes( $_SERVER['REQUEST_URI'] ) ) );
 				exit;
