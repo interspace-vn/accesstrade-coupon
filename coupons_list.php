@@ -58,11 +58,22 @@ class Nhymxu_AT_Coupon_List extends WP_List_Table
 	private function get_number_of_records() {
 		global $wpdb;
 
+        $sql = "SELECT COUNT(*) FROM {$wpdb->prefix}coupons";
+
         if( $this->active_filter != '' ) {
-            return $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->prefix}coupons WHERE type = '{$this->active_filter}'" );
+            $sql .= ' WHERE type = "'. $_REQUEST['filter_merchant'] .'"';
         }
 
-		return $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->prefix}coupons" );
+        if( $this->search_key != '' ) {
+            if( $this->active_filter == '' ) {
+                $sql .= ' WHERE';
+            } else {
+                $sql .= ' AND';
+            }
+            $sql .= ' (title LIKE "%'. $this->search_key .'%" OR code LIKE "%'. $this->search_key .'%")';
+        }
+
+		return $wpdb->get_var( $sql );
 	}
 
     /**
@@ -117,11 +128,16 @@ class Nhymxu_AT_Coupon_List extends WP_List_Table
 		$sql = "SELECT id, title, type, code, exp, note, save FROM {$wpdb->prefix}coupons";
         
         if( $this->active_filter != '' ) {
-            $sql .= ' WHERE type = "'. $_REQUEST['filter_merchant'] .'"';
+            $sql .= ' WHERE type = "'. $this->active_filter .'"';
         }
 
         if( $this->search_key != '' ) {
-            $sql .= ' AND title LIKE "%'. $this->search_key .'%"';
+            if( $this->active_filter == '' ) {
+                $sql .= ' WHERE';
+            } else {
+                $sql .= ' AND';
+            }
+            $sql .= ' (title LIKE "%'. $this->search_key .'%" OR code LIKE "%'. $this->search_key .'%")';
         }
 
 		if ( !empty( $_REQUEST['orderby'] ) ) {
