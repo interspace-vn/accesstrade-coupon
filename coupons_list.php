@@ -7,6 +7,7 @@ class Nhymxu_AT_Coupon_List extends WP_List_Table
 {
     public $active_filter = '';
     public $filters = [];
+    public $search_key = '';
 
     /**
      * Prepare the items for the table to process
@@ -17,7 +18,7 @@ class Nhymxu_AT_Coupon_List extends WP_List_Table
     {
         global $wpdb;
 
-        $user_search_key = isset( $_REQUEST['s'] ) ? wp_unslash( trim( $_REQUEST['s'] ) ) : '';
+        $this->search_key = isset( $_REQUEST['s'] ) ? wp_unslash( trim( $_REQUEST['s'] ) ) : '';
 
         $columns = $this->get_columns();
         $hidden = $this->get_hidden_columns();
@@ -117,6 +118,10 @@ class Nhymxu_AT_Coupon_List extends WP_List_Table
         
         if( $this->active_filter != '' ) {
             $sql .= ' WHERE type = "'. $_REQUEST['filter_merchant'] .'"';
+        }
+
+        if( $this->search_key != '' ) {
+            $sql .= ' AND title LIKE "%'. $this->search_key .'%"';
         }
 
 		if ( !empty( $_REQUEST['orderby'] ) ) {
