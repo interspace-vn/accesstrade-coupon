@@ -6,6 +6,16 @@ class nhymxu_at_coupon_admin {
 		add_action( 'wp_ajax_nhymxu_coupons_ajax_insertupdate', [$this, 'ajax_insert_update'] );
 		add_action( 'wp_ajax_nhymxu_coupons_ajax_checkcoupon', [$this, 'ajax_check_coupon'] );
 		add_action( 'wp_ajax_nhymxu_coupons_ajax_deletecoupon', [$this, 'ajax_delete_coupon'] );	
+		add_action( 'init', [$this, 'wp_strip_referer'] );
+	}
+
+	function wp_strip_referer() {
+		if (is_admin() && ($_GET['page'] == "accesstrade_coupon")) {
+			if (strpos($_SERVER['REQUEST_URI'], '_wp_http_referer') !== false) {
+				wp_redirect( remove_query_arg( array( '_wp_http_referer', '_wpnonce' ), stripslashes( $_SERVER['REQUEST_URI'] ) ) );
+				exit;
+			}
+		}
 	}
 
 	public function ajax_insert_update() {
@@ -337,171 +347,171 @@ class nhymxu_at_coupon_admin {
 				$default_data = $tmp;
 			}
 		}
-	?>
-	<link rel="stylesheet" href="//unpkg.com/purecss@1.0.0/build/forms-min.css">
-	<link rel="stylesheet" href="//unpkg.com/purecss@1.0.0/build/buttons-min.css">
-	<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.4/css/selectize.min.css">
-	<script src="//cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.4/js/standalone/selectize.min.js" type="text/javascript"></script>
-	<style>
-	div.selectize-control.single {
-		display: inline-block;
-		min-width: 250px;
-	}
-	</style>
-	<script type="text/javascript">
-	/*
-	 * Insert coupon
-	 * @args action_type	int
-	 *		0: insert once
-	 *		1: insert more
-	 */
-	function nhymxu_insert_log( msg ) {
-		jQuery('#nhymxu_coupon_notice').html(msg);
-	}
-
-	function nhymxu_coupon_exec( action_type ) {
-		var jq = jQuery;
-		var input = {
-			cid: jq('#input_couponid').val(),
-			merchant: jq('#input_merchant').val(),
-			title: jq('#input_title').val(),
-			code: jq('#input_code').val(),
-			note: jq('#input_note').val(),
-			url: jq('#input_url').val(),
-			save: jq('#input_save').val(),
-			exp: jq('#input_exp').val()
-		};
-
-		if( input['merchant'] === '' || input['title'] === '' || input['url'] === '' || input['exp'] === '' ) {
-			nhymxu_insert_log('Nhập đủ các mục bắt buộc!');
-			return false;
+		?>
+		<link rel="stylesheet" href="//unpkg.com/purecss@1.0.0/build/forms-min.css">
+		<link rel="stylesheet" href="//unpkg.com/purecss@1.0.0/build/buttons-min.css">
+		<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.4/css/selectize.min.css">
+		<script src="//cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.4/js/standalone/selectize.min.js" type="text/javascript"></script>
+		<style>
+		div.selectize-control.single {
+			display: inline-block;
+			min-width: 250px;
+		}
+		</style>
+		<script type="text/javascript">
+		/*
+		* Insert coupon
+		* @args action_type	int
+		*		0: insert once
+		*		1: insert more
+		*/
+		function nhymxu_insert_log( msg ) {
+			jQuery('#nhymxu_coupon_notice').html(msg);
 		}
 
-		var today = new Date();
-		var expired = new Date( input['exp'] );
-		if( +expired <= +today ) {
-			nhymxu_insert_log('Chọn ngày hết hạn phải từ hôm nay.');
-			return false;
-		}
+		function nhymxu_coupon_exec( action_type ) {
+			var jq = jQuery;
+			var input = {
+				cid: jq('#input_couponid').val(),
+				merchant: jq('#input_merchant').val(),
+				title: jq('#input_title').val(),
+				code: jq('#input_code').val(),
+				note: jq('#input_note').val(),
+				url: jq('#input_url').val(),
+				save: jq('#input_save').val(),
+				exp: jq('#input_exp').val()
+			};
 
-		if( input['save'].length > 5 ) {
-			nhymxu_insert_log('Mức giảm giá phải dưới 6 kí tự.');
-			return false;
-		} 
-
-		function exec_after_success() {
-			if( action_type === 0 ) {
-				window.location.href = '<?=admin_url('admin.php?page=accesstrade_coupon');?>';
-			} else if ( action_type === 1 ) {
-				window.location.reload();
+			if( input['merchant'] === '' || input['title'] === '' || input['url'] === '' || input['exp'] === '' ) {
+				nhymxu_insert_log('Nhập đủ các mục bắt buộc!');
+				return false;
 			}
-		}
 
-		function ajax_database_exec() {
-			jQuery.ajax({
+			var today = new Date();
+			var expired = new Date( input['exp'] );
+			if( +expired <= +today ) {
+				nhymxu_insert_log('Chọn ngày hết hạn phải từ hôm nay.');
+				return false;
+			}
+
+			if( input['save'].length > 5 ) {
+				nhymxu_insert_log('Mức giảm giá phải dưới 6 kí tự.');
+				return false;
+			} 
+
+			function exec_after_success() {
+				if( action_type === 0 ) {
+					window.location.href = '<?=admin_url('admin.php?page=accesstrade_coupon');?>';
+				} else if ( action_type === 1 ) {
+					window.location.reload();
+				}
+			}
+
+			function ajax_database_exec() {
+				jQuery.ajax({
+					type: "POST",
+					url: ajaxurl,
+					data: { action: 'nhymxu_coupons_ajax_insertupdate', coupon_data: input },
+					success: function(response) {
+						if( response == 'found' ) {
+							alert('Xử lý thất bại. Vui lòng thử lại.');
+						} else {
+							alert('Thành công');
+							exec_after_success();
+						}
+					}
+				});
+			}
+
+			if( input['cid'] > 0 ) {
+				ajax_database_exec();
+			} else {
+				jQuery.ajax({
 				type: "POST",
 				url: ajaxurl,
-				data: { action: 'nhymxu_coupons_ajax_insertupdate', coupon_data: input },
+				data: { action: 'nhymxu_coupons_ajax_checkcoupon', coupon_data: input },
 				success: function(response) {
 					if( response == 'found' ) {
+						alert('Đã tồn tại coupon.');
+					} else if( response == 0 ) {
 						alert('Xử lý thất bại. Vui lòng thử lại.');
 					} else {
 						alert('Thành công');
 						exec_after_success();
 					}
-				}
+				}			
 			});
+			}
 		}
 
-		if( input['cid'] > 0 ) {
-			ajax_database_exec();
-		} else {
-			jQuery.ajax({
-			type: "POST",
-			url: ajaxurl,
-			data: { action: 'nhymxu_coupons_ajax_checkcoupon', coupon_data: input },
-			success: function(response) {
-				if( response == 'found' ) {
-					alert('Đã tồn tại coupon.');
-				} else if( response == 0 ) {
-					alert('Xử lý thất bại. Vui lòng thử lại.');
-				} else {
-					alert('Thành công');
-					exec_after_success();
-				}
-			}			
+		jQuery(document).ready(function (){
+			jQuery('#input_merchant').selectize({
+				create: false,
+				sortField: 'text'
+			});
 		});
-		}
-	}
+		</script>
+		<div class="wrap">
+			<h2 class="dashicons-before dashicons-tickets"><?=( isset($_GET['coupon_id']) && $_GET['coupon_id'] != '' ) ? 'Sửa thông tin coupon' : 'Thêm coupon mới';?></h2>
+			<div class="body_coupon">
+				<div id="nhymxu_coupon_notice"></div>
+				<div class="pure-form pure-form-aligned">
+					<fieldset>
+						<input type="hidden" id="input_couponid" value="<?=$default_data['id'];?>">
+						<div class="pure-control-group">
+							<label for="input_merchant">Merchant*</label>
+							<select id="input_merchant" required autocomplete="off">
+								<option value="">---Chọn merchant---</option>
+								<?php foreach( $active_merchants as $slug => $title ): ?>
+								<option value="<?=$slug;?>" <?=( $slug == $default_data['type'] ) ? 'selected' : '';?>><?=$title;?></option>
+								<?php endforeach; ?>
+							</select>
+							<span class="pure-form-message-inline">Bắt buộc</span>
+						</div>
 
-	jQuery(document).ready(function (){
-		jQuery('#input_merchant').selectize({
-			create: false,
-			sortField: 'text'
-		});
-	});
-	</script>
-	<div class="wrap">
-		<h2 class="dashicons-before dashicons-tickets"><?=( isset($_GET['coupon_id']) && $_GET['coupon_id'] != '' ) ? 'Sửa thông tin coupon' : 'Thêm coupon mới';?></h2>
-		<div class="body_coupon">
-			<div id="nhymxu_coupon_notice"></div>
-			<div class="pure-form pure-form-aligned">
-				<fieldset>
-					<input type="hidden" id="input_couponid" value="<?=$default_data['id'];?>">
-					<div class="pure-control-group">
-						<label for="input_merchant">Merchant*</label>
-						<select id="input_merchant" required autocomplete="off">
-							<option value="">---Chọn merchant---</option>
-							<?php foreach( $active_merchants as $slug => $title ): ?>
-							<option value="<?=$slug;?>" <?=( $slug == $default_data['type'] ) ? 'selected' : '';?>><?=$title;?></option>
-							<?php endforeach; ?>
-						</select>
-						<span class="pure-form-message-inline">Bắt buộc</span>
-					</div>
+						<div class="pure-control-group">
+							<label for="input_title">Tiêu đề*</label>
+							<input id="input_title" type="text" placeholder="Tiêu đề" required value="<?=$default_data['title'];?>" autocomplete="off">
+							<span class="pure-form-message-inline">Bắt buộc</span>
+						</div>
 
-					<div class="pure-control-group">
-						<label for="input_title">Tiêu đề*</label>
-						<input id="input_title" type="text" placeholder="Tiêu đề" required value="<?=$default_data['title'];?>" autocomplete="off">
-						<span class="pure-form-message-inline">Bắt buộc</span>
-					</div>
+						<div class="pure-control-group">
+							<label for="input_code">Mã giảm giá</label>
+							<input id="input_code" type="text" placeholder="Mã giảm giá" value="<?=$default_data['code'];?>" autocomplete="off">
+							<span class="pure-form-message-inline">Tối đa 60 kí tự</span>
+						</div>
 
-					<div class="pure-control-group">
-						<label for="input_code">Mã giảm giá</label>
-						<input id="input_code" type="text" placeholder="Mã giảm giá" value="<?=$default_data['code'];?>" autocomplete="off">
-						<span class="pure-form-message-inline">Tối đa 60 kí tự</span>
-					</div>
+						<div class="pure-control-group">
+							<label for="input_note">Ghi chú</label>
+							<input id="input_note" type="text" placeholder="Ghi chú" value="<?=$default_data['note'];?>" autocomplete="off">
+						</div>
 
-					<div class="pure-control-group">
-						<label for="input_note">Ghi chú</label>
-						<input id="input_note" type="text" placeholder="Ghi chú" value="<?=$default_data['note'];?>" autocomplete="off">
-					</div>
+						<div class="pure-control-group">
+							<label for="input_url">Link đích*</label>
+							<input id="input_url" type="text" placeholder="Link đích" value="<?=$default_data['url'];?>" required autocomplete="off">
+							<span class="pure-form-message-inline">Không nhập link affiliate ở đây</span>
+						</div>
 
-					<div class="pure-control-group">
-						<label for="input_url">Link đích*</label>
-						<input id="input_url" type="text" placeholder="Link đích" value="<?=$default_data['url'];?>" required autocomplete="off">
-						<span class="pure-form-message-inline">Không nhập link affiliate ở đây</span>
-					</div>
+						<div class="pure-control-group">
+							<label for="input_save">Mức giảm giá</label>
+							<input id="input_save" type="text" placeholder="Mô tả ngắn. VD: 500k" value="<?=$default_data['save'];?>" autocomplete="off">
+							<span class="pure-form-message-inline">Tối đa 5 kí tự</span>
+						</div>
 
-					<div class="pure-control-group">
-						<label for="input_save">Mức giảm giá</label>
-						<input id="input_save" type="text" placeholder="Mô tả ngắn. VD: 500k" value="<?=$default_data['save'];?>" autocomplete="off">
-						<span class="pure-form-message-inline">Tối đa 5 kí tự</span>
-					</div>
+						<div class="pure-control-group">
+							<label for="input_exp">Ngày hết hạn*</label>
+							<input id="input_exp" type="date" placeholder="YYYY-MM-DD" required value="<?=$default_data['exp'];?>" autocomplete="off">
+						</div>
 
-					<div class="pure-control-group">
-						<label for="input_exp">Ngày hết hạn*</label>
-						<input id="input_exp" type="date" placeholder="YYYY-MM-DD" required value="<?=$default_data['exp'];?>" autocomplete="off">
-					</div>
-
-					<div class="pure-controls">
-						<button onclick="nhymxu_coupon_exec(0);" class="pure-button pure-button-primary">Lưu coupon</button>
-						<button onclick="nhymxu_coupon_exec(1);" class="pure-button pure-button-primary">Lưu và thêm coupon mới</button>
-					</div>
-				</fieldset>
+						<div class="pure-controls">
+							<button onclick="nhymxu_coupon_exec(0);" class="pure-button pure-button-primary">Lưu coupon</button>
+							<button onclick="nhymxu_coupon_exec(1);" class="pure-button pure-button-primary">Lưu và thêm coupon mới</button>
+						</div>
+					</fieldset>
+				</div>
 			</div>
 		</div>
-	</div>
-	<?php
+		<?php
 	}
 
 	/*
@@ -580,7 +590,11 @@ class nhymxu_at_coupon_admin {
 			<h1 class="dashicons-before dashicons-tickets wp-heading-inline">Coupons</h1>
  			<a href="<?=admin_url( 'admin.php?page=accesstrade_coupon_addnew' );?>" class="page-title-action">Thêm mới</a>
 			<hr class="wp-header-end">
-			<?php $coupon_list_table->display(); ?>
+			<form id="nhymxu-coupon-list-form" method="get">
+				<input type="hidden" name="page" value="<?php echo $_REQUEST['page'] ?>">
+				<?php $coupon_list_table->search_box( 'Tìm', 'nhymxu-coupon-find'); ?>
+				<?php $coupon_list_table->display(); ?>
+			</form>
 		</div>
 	<?php
 	}
