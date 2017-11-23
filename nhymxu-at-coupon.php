@@ -26,11 +26,9 @@ class nhymxu_at_coupon {
 	public function __construct() {
 		add_filter( 'http_request_host_is_external', [$this, 'allow_external_update_host'], 10, 3 );
 		add_action( 'nhymxu_at_coupon_sync_event', [$this,'do_this_twicedaily'] );
-		add_action( 'nhymxu_at_coupon_sync_merchant_event', [$this,'do_this_daily'] );
 		add_shortcode( 'atcoupon', [$this,'shortcode_callback'] );
 		add_action( 'init', [$this, 'init_updater'] );
 		add_action( 'wp_ajax_nhymxu_coupons_ajax_forceupdate', [$this, 'ajax_force_update'] );
-		add_action( 'wp_ajax_nhymxu_coupons_ajax_forceupdate_merchants', [$this, 'ajax_force_update_merchants'] );
 	}
 	
 	public function do_this_twicedaily() {
@@ -74,46 +72,6 @@ class nhymxu_at_coupon {
 			}
 		}
 
-	}
-
-	public function do_this_daily() {
-		global $wpdb;
-		$current_time = time();
-
-		$options = get_option('nhymxu_at_coupon', ['uid' => '', 'accesskey' => '','utmsource' => '']);
-
-		if( $options['accesskey'] == '' ) {
-			return false;
-		} 
-
-		$url = 'https://api.accesstrade.vn/v1/campaigns';
-
-		$args = [
-			'timeout'=>'60',
-			'headers' => ['Authorization' => 'Token '. $options['accesskey'] ],
-		];
-
-		$result = wp_remote_get( $url, $args );		
-		if ( is_wp_error( $result ) ) {
-			$msg = [];
-			$msg['previous_time'] = '';
-			$msg['current_time'] = $current_time;
-			$msg['error_msg'] = $result->get_error_message();
-			$msg['action'] = 'get_merchant';
-
-			$this->insert_log( $msg );
-		} else {
-			$input = json_decode( $result['body'], true );
-			if( !empty($input) && isset( $input['data'] ) && is_array( $input['data'] ) ) {
-				$prepare_data = [];
-				foreach( $input['data'] as $campain ) {
-					if( $campain['approval'] == 'successful' && $campain['scope'] == 'public' && !in_array( $campain['merchant'], $this->ignore_campains ) ) {
-						$prepare_data[$campain['merchant']] = $campain['name'];
-					}
-				}
-				update_option( 'nhymxu_at_coupon_merchants', $prepare_data );
-			}
-		}
 	}
 
 	public function shortcode_callback( $atts, $content = '' ) {
@@ -284,15 +242,6 @@ class nhymxu_at_coupon {
 		$this->do_this_twicedaily();
 		echo 'running';
 		wp_die();
-	}
-
-	/*
-	 * Force update merchant list from server
-	 */
-	public function ajax_force_update_merchants() {
-		$this->do_this_daily();
-		echo 'running';
-		wp_die();		
 	}
 
 	public function allow_external_update_host( $allow, $host, $url ) {
