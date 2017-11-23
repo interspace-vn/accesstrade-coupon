@@ -347,12 +347,14 @@ class nhymxu_at_coupon {
 $nhymxu_at_coupon = new nhymxu_at_coupon();
 
 if( is_admin() ) {
-	require_once __DIR__ . '/admin.php';
 	require_once __DIR__ . '/editor.php';
-	require_once __DIR__ . '/coupons_list.php';
-
 	new nhymxu_at_coupon_editor();
-	new nhymxu_at_coupon_admin();
+
+	include_once( ABSPATH . 'wp-admin/includes/plugin.php' );
+	if ( !is_plugin_active( 'nhymxu-at-coupon-pro/nhymxu-at-coupon-pro.php' ) ) {
+		require_once __DIR__ . '/admin.php';
+		new nhymxu_at_coupon_admin();
+	}
 }
 
 require_once __DIR__ . '/install.php';
