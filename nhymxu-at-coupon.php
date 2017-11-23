@@ -15,14 +15,6 @@ date_default_timezone_set('Asia/Ho_Chi_Minh');
 
 class nhymxu_at_coupon {
 
-	private $ignore_campains = [
-		'lazadacashback',
-		'uber_rider',
-		'ubernew',
-		'agodamobile',
-		'lazadaapp',
-	];
-
 	public function __construct() {
 		add_filter( 'http_request_host_is_external', [$this, 'allow_external_update_host'], 10, 3 );
 		add_action( 'nhymxu_at_coupon_sync_event', [$this,'do_this_twicedaily'] );
@@ -263,7 +255,7 @@ class nhymxu_at_coupon {
 		}
 	}
 
-	private function insert_log( $data ) {
+	public function insert_log( $data ) {
 		global $wpdb;
 
 		$wpdb->insert(
