@@ -16,7 +16,7 @@ class nhymxu_at_coupon_install {
 				'name'	=> 'nhymxu-at-coupon'
 			],
 			'cookies' => []
-		]);
+		] );
 	}
 
 	public static function create_table() {
@@ -27,22 +27,22 @@ class nhymxu_at_coupon_install {
 		require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 
 		$sql = "CREATE TABLE IF NOT EXISTS {$wpdb->prefix}coupons (
-			`id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
-			`type` VARCHAR(10) NOT NULL DEFAULT '' COLLATE 'utf8mb4_unicode_ci',
-			`title` TEXT NOT NULL COLLATE 'utf8mb4_unicode_ci',
-			`code` VARCHAR(60) NOT NULL DEFAULT '' COLLATE 'utf8mb4_unicode_ci',
+			`id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+			`type` VARCHAR(100) NOT NULL DEFAULT '',
+			`title` TEXT NOT NULL,
+			`code` VARCHAR(100) NOT NULL DEFAULT '',
 			`exp` DATE NOT NULL,
-			`note` TEXT NOT NULL COLLATE 'utf8mb4_unicode_ci',
-			`url` TEXT NOT NULL COLLATE 'utf8mb4_unicode_ci',
-			`save` VARCHAR(20) NOT NULL DEFAULT '' COLLATE 'utf8mb4_unicode_ci',
+			`note` TEXT NOT NULL,
+			`url` TEXT NOT NULL,
+			`save` VARCHAR(100) NOT NULL DEFAULT '',
 			PRIMARY KEY (`id`)
 		) {$charset_collate};";
 		dbDelta( $sql );
 		
 		$sql = "CREATE TABLE IF NOT EXISTS {$wpdb->prefix}coupon_categories (
-			`id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
-			`name` VARCHAR(250) NULL DEFAULT '' COLLATE 'utf8mb4_unicode_ci',
-			`slug` VARCHAR(100) NOT NULL DEFAULT '' COLLATE 'utf8mb4_unicode_ci',
+			`id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+			`name` VARCHAR(250) NULL DEFAULT '',
+			`slug` VARCHAR(100) NOT NULL DEFAULT '',
 			PRIMARY KEY (`id`),
 			INDEX `slug` (`slug`)
 		) {$charset_collate};";
@@ -56,12 +56,28 @@ class nhymxu_at_coupon_install {
 		dbDelta( $sql );
 		
 		$sql = "CREATE TABLE IF NOT EXISTS {$wpdb->prefix}coupon_logs (
-			`id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+			`id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 			`created_at` INT(20) UNSIGNED NOT NULL,
-			`data` TEXT NOT NULL COLLATE 'utf8mb4_unicode_ci',
+			`data` TEXT NOT NULL,
 			PRIMARY KEY (`id`)
 		) {$charset_collate};";
 		dbDelta( $sql );
+
+		update_option( 'nhymxu_at_coupon_db_ver', NHYMXU_AT_COUPON_VER );
+	}
+
+	private function upgrade_database( $db_version ) {
+		global $wpdb;
+
+		if ( version_compare( $db_version, '0.3.0' ) < 0 ) {
+			$sql = '
+				ALTER TABLE '. $wpdb->prefix .'coupons CHANGE type type VARCHAR(100);
+				ALTER TABLE '. $wpdb->prefix .'coupons CHANGE code code VARCHAR(100);
+				ALTER TABLE '. $wpdb->prefix .'coupons CHANGE save save VARCHAR(100);
+			';
+			$wpdb->query($sql);
+			update_option( 'nhymxu_at_coupon_db_ver', '0.3.0' );
+		}
 	}
 
 	public static function drop_table() {
@@ -83,10 +99,17 @@ class nhymxu_at_coupon_install {
 	}
 
 	static public function plugin_install() {
-		static::active_track();
-		static::create_table();
+		$db_version = get_option( 'nhymxu_at_coupon_db_ver', '0.0.0' );
 
-		if (! wp_next_scheduled ( 'nhymxu_at_coupon_sync_event' )) {
+		static::active_track();
+
+		if( $db_version === '0.0.0' ) {
+			static::create_table();
+		}
+
+		static::upgrade_database( $db_version );
+
+		if (! wp_next_scheduled( 'nhymxu_at_coupon_sync_event' )) {
 			wp_schedule_event( time(), 'twicedaily', 'nhymxu_at_coupon_sync_event' );
 		}
 	}

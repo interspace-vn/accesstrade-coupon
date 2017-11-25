@@ -1,10 +1,10 @@
 <?php
 /*
-Plugin Name: AccessTrade Coupon
+Plugin Name: ACCESSTRADE Coupon
 Plugin URI: http://github.com/nhymxu/accesstrade-coupon
-Description: Hệ thống coupon đồng bộ tự động từ AccessTrade
+Description: Hệ thống coupon đồng bộ tự động từ ACCESSTRADE
 Author: Dũng Nguyễn (nhymxu)
-Version: 0.2.0
+Version: 0.3.0
 Author URI: http://dungnt.net
 */
 
