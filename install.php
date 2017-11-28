@@ -121,6 +121,8 @@ class nhymxu_at_coupon_install {
 	static public function plugin_uninstall() {
 		delete_option('nhymxu_at_coupon_sync_time');
 		delete_site_option('nhymxu_at_coupon_sync_time');
+		delete_option('nhymxu_at_coupon_db_ver');
+		delete_site_option('nhymxu_at_coupon_db_ver');
 		wp_clear_scheduled_hook( 'nhymxu_at_coupon_sync_event' );
 
 		static::drop_table();
