@@ -25,7 +25,13 @@ class nhymxu_at_coupon_admin {
 			update_option('nhymxu_at_coupon', $input);
 			echo '<h1>Cập nhật thành công</h1><br>';
 		}
-		$option = get_option('nhymxu_at_coupon', ['uid' => '', 'utmsource' => '']);
+		$option = get_option('nhymxu_at_coupon', ['uid' => '', 'accesskey' => '', 'utmsource' => '']);
+		$uid = (isset($option['uid'])) ? $option['uid'] : '';
+		if( defined('NHYMXU_MARS_VERSION') && $uid == '' ) {
+			$uid = get_option('accesstrade_userid');
+			$option['uid'] = $uid;
+			update_option('nhymxu_at_coupon', $option);
+		}
 		?>
 		<script type="text/javascript">
 		function nhymxu_force_update_coupons() {
@@ -58,7 +64,7 @@ class nhymxu_at_coupon_admin {
 				<table>
 					<tr>
 						<td>ACCESSTRADE ID*:</td>
-						<td><input type="text" name="nhymxu_at_coupon_uid" value="<?=(isset($option['uid'])) ? $option['uid'] : '';?>"></td>
+						<td><input type="text" name="nhymxu_at_coupon_uid" value="<?=$uid;?>" <?=( defined('NHYMXU_MARS_VERSION') ) ? 'disabled' : '';?>></td>
 					</tr>
 					<tr>
 						<td></td>
