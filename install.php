@@ -70,12 +70,9 @@ class nhymxu_at_coupon_install {
 		global $wpdb;
 
 		if ( version_compare( $db_version, '0.3.0' ) < 0 ) {
-			$sql = '
-				ALTER TABLE '. $wpdb->prefix .'coupons CHANGE type type VARCHAR(100);
-				ALTER TABLE '. $wpdb->prefix .'coupons CHANGE code code VARCHAR(100);
-				ALTER TABLE '. $wpdb->prefix .'coupons CHANGE save save VARCHAR(100);
-			';
-			$wpdb->query($sql);
+			$wpdb->query('ALTER TABLE '. $wpdb->prefix .'coupons CHANGE type type VARCHAR(100);');
+			$wpdb->query('ALTER TABLE '. $wpdb->prefix .'coupons CHANGE code code VARCHAR(100);');
+			$wpdb->query('ALTER TABLE '. $wpdb->prefix .'coupons CHANGE save save VARCHAR(100);');
 			update_option( 'nhymxu_at_coupon_db_ver', '0.3.0' );
 		}
 	}
