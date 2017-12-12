@@ -19,6 +19,9 @@ class nhymxu_at_coupon {
 		add_filter( 'http_request_host_is_external', [$this, 'allow_external_update_host'], 10, 3 );
 		add_action( 'nhymxu_at_coupon_sync_event', [$this,'do_this_twicedaily'] );
 		add_shortcode( 'atcoupon', [$this,'shortcode_callback'] );
+		if( defined('NHYMXU_MARS_VERSION') ) {
+			add_shortcode( 'coupon', [$this,'shortcode_callback'] );
+		}
 		add_action( 'init', [$this, 'init_updater'] );
 		add_action( 'wp_ajax_nhymxu_coupons_ajax_forceupdate', [$this, 'ajax_force_update'] );
 	}

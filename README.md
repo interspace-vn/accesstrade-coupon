@@ -24,16 +24,16 @@ Việc đồng bộ sẽ được tự động thực hiện 2 lần 1 ngày.
 # Cách sử dụng
 Format đầy đủ
 ```
-[coupon type="merchant1,merchant2" cat="category-1,category-2"]
+[atcoupon type="merchant1,merchant2" cat="category-1,category-2"]
 ```
 Trong đó *type* là thuộc tính bắt buộc, *cat* là thuộc tính tùy chọn có thể xóa bỏ.
 Có thể chọn nhiều merchant, category. Chúng được ngắn cách bằng dấu *,*
 
 Ví dụ
 ```
-[coupon type="lazada"]
-[coupon type="adayroi,lazada"]
-[coupon type="adayroi" cat="me-va-be"]
+[atcoupon type="lazada"]
+[atcoupon type="adayroi,lazada"]
+[atcoupon type="adayroi" cat="me-va-be"]
 ```
 
 # Cách tùy biến giao diện coupon
@@ -63,4 +63,4 @@ Hệ thống tự động sử dụng giao diện coupon mặc định.
 ## Bản quyền
 
 Dự án này được giữ bản quyền cho tác giả. Bạn được phép sử dụng miễn phí.
-Mọi chỉnh sửa phân phối đều phải được sự đồng ý của tác giả.
+Mọi chỉnh sửa, phân phối đều phải được sự đồng ý của tác giả.
