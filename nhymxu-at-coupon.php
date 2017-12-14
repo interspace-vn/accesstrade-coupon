@@ -4,12 +4,12 @@ Plugin Name: ACCESSTRADE Coupon
 Plugin URI: http://github.com/nhymxu/accesstrade-coupon
 Description: Hệ thống coupon đồng bộ tự động từ ACCESSTRADE
 Author: Dũng Nguyễn (nhymxu)
-Version: 0.3.2
+Version: 0.3.3
 Author URI: http://dungnt.net
 */
 
 defined( 'ABSPATH' ) || die;
-define('NHYMXU_AT_COUPON_VER', "0.3.2");
+define('NHYMXU_AT_COUPON_VER', "0.3.3");
 
 date_default_timezone_set('Asia/Ho_Chi_Minh');
 
@@ -19,18 +19,16 @@ class nhymxu_at_coupon {
 		add_filter( 'http_request_host_is_external', [$this, 'allow_external_update_host'], 10, 3 );
 		add_action( 'nhymxu_at_coupon_sync_event', [$this,'do_this_twicedaily'] );
 		add_shortcode( 'atcoupon', [$this,'shortcode_callback'] );
-		if( defined('NHYMXU_MARS_VERSION') ) {
-			add_shortcode( 'coupon', [$this,'shortcode_callback'] );
-		}
+		add_shortcode( 'coupon', [$this,'shortcode_callback'] );
 		add_action( 'init', [$this, 'init_updater'] );
 		add_action( 'wp_ajax_nhymxu_coupons_ajax_forceupdate', [$this, 'ajax_force_update'] );
 	}
-	
+
 	public function do_this_twicedaily() {
 		global $wpdb;
 		$previous_time = get_option('nhymxu_at_coupon_sync_time', 0);
 		$current_time = time();
-		
+
 		$url = 'http://sv.isvn.space/api/v1/mars/coupon?from='.$previous_time.'&to='.$current_time;
 
 		$result = wp_remote_get( $url, ['timeout'=>'60'] );
@@ -75,14 +73,14 @@ class nhymxu_at_coupon {
 			'cat'	=> '',
 			'limit' => ''
 		], $atts );
-	
+
 		if( '' == $args['type'] )
 			return '';
-		
+
 		$data = $this->get_coupons( $args['type'], $args['cat'], $args['limit'] );
-	
+
 		$html = $this->build_html( $data );
-		
+
 		return $html;
 	}
 
@@ -91,20 +89,20 @@ class nhymxu_at_coupon {
 	 */
 	private function get_coupons( $vendor, $category = '', $limit = '' ) {
 		global $wpdb;
-		
+
 		date_default_timezone_set('Asia/Ho_Chi_Minh');
-	
+
 		$today = date('Y-m-d');
-	
+
 		$vendor = explode(',', $vendor);
 		$vendor_slug = [];
 		foreach( $vendor as $slug ) {
 			$vendor_slug[] = "'". $slug ."'";
 		}
 		$vendor_slug = implode(',', $vendor_slug);
-	
+
 		$sql = "SELECT * FROM {$wpdb->prefix}coupons WHERE type IN ({$vendor_slug}) AND exp >= '{$today}' ORDER BY exp ASC";
-	
+
 		if( $category != '' ) {
 			$cat_slug = explode(',', $category);
 			$cat_slug_arr = [];
@@ -112,7 +110,7 @@ class nhymxu_at_coupon {
 				$cat_slug_arr[] = "'". trim($cat) ."'";
 			}
 			$cat_slug_arr = implode(',', $cat_slug_arr);
-	
+
 			$coupon_cats = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}coupon_categories WHERE slug IN ({$cat_slug_arr})");
 			if( !$coupon_cats ) {
 				return false;
@@ -122,16 +120,16 @@ class nhymxu_at_coupon {
 				$cat_id[] = $row->id;
 			}
 			$cat_id = implode(',', $cat_id);
-	
-			$sql = "SELECT coupons.* FROM {$wpdb->prefix}coupons AS coupons LEFT JOIN {$wpdb->prefix}coupon_category_rel AS rel ON rel.coupon_id = coupons.id WHERE coupons.type IN ({$vendor_slug}) AND rel.category_id IN ({$cat_id}) AND coupons.exp >= '{$today}' ORDER BY coupons.exp ASC";	
+
+			$sql = "SELECT coupons.* FROM {$wpdb->prefix}coupons AS coupons LEFT JOIN {$wpdb->prefix}coupon_category_rel AS rel ON rel.coupon_id = coupons.id WHERE coupons.type IN ({$vendor_slug}) AND rel.category_id IN ({$cat_id}) AND coupons.exp >= '{$today}' ORDER BY coupons.exp ASC";
 		}
-	
+
 		if( $limit != '' && $limit >= 0 ) {
 			$sql .= ' LIMIT 0,' . $limit;
 		}
-	
+
 		$results = $wpdb->get_results( $sql, ARRAY_A );
-		
+
 		if( $results ) {
 			$coupon_id = [];
 			$data = [];
@@ -146,10 +144,10 @@ class nhymxu_at_coupon {
 			foreach( $cats as $cat ) {
 				$data[$cat['coupon_id']]['categories'][] = $cat['name'];
 			}
-		
+
 			return $data;
 		}
-	
+
 		return false;
 	}
 
@@ -160,12 +158,12 @@ class nhymxu_at_coupon {
 		if( !$at_coupons ) {
 			return '';
 		}
-	
+
 		ob_start();
 
 		if( file_exists( get_template_directory() . '/accesstrade_coupon_template.php' ) ) {
 			require get_template_directory() . '/accesstrade_coupon_template.php';
-			return ob_get_clean();	
+			return ob_get_clean();
 		}
 		?>
 		<style>
@@ -207,26 +205,26 @@ class nhymxu_at_coupon {
 					<?php endif; ?>
 					</div>
 				</div>
-			</div>	
+			</div>
 		<?php
 		endforeach;
-		
+
 		$html = ob_get_clean();
 		return $html;
 	}
 
 	private function build_deeplink( $url ) {
 		$option = get_option('nhymxu_at_coupon', ['uid' => '', 'accesskey' => '','utmsource' => '']);
-		
+
 		if( $option['uid'] == '' ) {
 			return $url;
 		}
-	
+
 		$utm_source = '';
 		if( $option['utmsource'] != '' ) {
 			$utm_source = '&utm_source='. $option['utmsource'];
 		}
-	
+
 		return 'https://pub.accesstrade.vn/deep_link/'. $option['uid'] .'?url=' . rawurlencode( $url ) . $utm_source;
 	}
 
@@ -269,13 +267,13 @@ class nhymxu_at_coupon {
 			],
 			['%d', '%s']
 		);
-		
+
 	}
 
 	private function insert_coupon( $data ) {
 		global $wpdb;
-		
-		$result = $wpdb->insert( 
+
+		$result = $wpdb->insert(
 			$wpdb->prefix . 'coupons',
 			[
 				'type'	=> $data['merchant'],
@@ -288,7 +286,7 @@ class nhymxu_at_coupon {
 			],
 			['%s','%s','%s','%s','%s','%s','%s']
 		);
-		
+
 		if ( $result ) {
 			$coupon_id = $wpdb->insert_id;
 			if( isset( $data['categories'] ) && !empty( $data['categories'] ) ) {
@@ -304,7 +302,7 @@ class nhymxu_at_coupon {
 					);
 				}
 			}
-	
+
 			return 1;
 		}
 
@@ -313,21 +311,21 @@ class nhymxu_at_coupon {
 		$msg['current_time'] = '';
 		$msg['error_msg'] = json_encode( $data );
 		$msg['action'] = 'insert_coupon';
-			
-		$this->insert_log( $msg );		
+
+		$this->insert_log( $msg );
 
 		return 0;
 	}
 
 	private function get_coupon_category_id( $input ) {
 		global $wpdb;
-	
+
 		$cat_id = [];
-	
+
 		foreach( $input as $row ) {
 			$slug = trim($row['slug']);
 			$result = $wpdb->get_row("SELECT * FROM {$wpdb->prefix}coupon_categories WHERE slug = '{$slug}'");
-			
+
 			if( $result ) {
 				$cat_id[] = (int) $result->id;
 			} else {
@@ -339,10 +337,10 @@ class nhymxu_at_coupon {
 					],
 					['%s', '%s']
 				);
-				$cat_id[] = (int) $wpdb->insert_id;				
+				$cat_id[] = (int) $wpdb->insert_id;
 			}
 		}
-	
+
 		return $cat_id;
 	}
 }
