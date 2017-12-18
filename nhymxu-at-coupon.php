@@ -101,7 +101,7 @@ class nhymxu_at_coupon {
 		}
 		$vendor_slug = implode(',', $vendor_slug);
 
-		$sql = "SELECT * FROM {$wpdb->prefix}coupons WHERE type IN ({$vendor_slug}) AND exp >= '{$today}' ORDER BY exp ASC";
+		$sql = "SELECT * FROM {$wpdb->prefix}coupons WHERE type IN ({$vendor_slug}) AND exp >= '{$today}' ORDER BY id DESC";
 
 		if( $category != '' ) {
 			$cat_slug = explode(',', $category);
@@ -121,7 +121,13 @@ class nhymxu_at_coupon {
 			}
 			$cat_id = implode(',', $cat_id);
 
-			$sql = "SELECT coupons.* FROM {$wpdb->prefix}coupons AS coupons LEFT JOIN {$wpdb->prefix}coupon_category_rel AS rel ON rel.coupon_id = coupons.id WHERE coupons.type IN ({$vendor_slug}) AND rel.category_id IN ({$cat_id}) AND coupons.exp >= '{$today}' ORDER BY coupons.exp ASC";
+			$sql = "SELECT coupons.* FROM {$wpdb->prefix}coupons AS coupons
+					LEFT JOIN {$wpdb->prefix}coupon_category_rel AS rel
+						ON rel.coupon_id = coupons.id
+					WHERE coupons.type IN ({$vendor_slug})
+						AND rel.category_id IN ({$cat_id})
+						AND coupons.exp >= '{$today}'
+					ORDER BY coupons.id DESC";
 		}
 
 		if( $limit != '' && $limit >= 0 ) {
@@ -139,7 +145,11 @@ class nhymxu_at_coupon {
 				$data[$row['id']]['categories'] = [];
 				$data[$row['id']]['deeplink'] = $this->build_deeplink( $row['url'] );
 			}
-			$sql = "SELECT rel.*, cat.name FROM {$wpdb->prefix}coupon_category_rel rel LEFT JOIN {$wpdb->prefix}coupon_categories cat ON rel.category_id = cat.id WHERE rel.coupon_id IN (". implode(',',$coupon_id) .")";
+			$sql = "SELECT rel.*, cat.name
+					FROM {$wpdb->prefix}coupon_category_rel rel
+					LEFT JOIN {$wpdb->prefix}coupon_categories cat
+						ON rel.category_id = cat.id
+					WHERE rel.coupon_id IN (". implode(',',$coupon_id) .")";
 			$cats = $wpdb->get_results( $sql, ARRAY_A );
 			foreach( $cats as $cat ) {
 				$data[$cat['coupon_id']]['categories'][] = $cat['name'];
