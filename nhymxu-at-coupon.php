@@ -185,7 +185,7 @@ class nhymxu_at_coupon {
 						</div>
 					</div>
 					<div class="promotiondetails">
-						<div class="coupontitle"><?=$row['title'];?></div>
+						<div class="coupontitle"><small>[<?=$row['type'];?>]</small>&nbsp;<?=$row['title'];?></div>
 						<div class="cpinfo">
 							<strong>Hạn dùng: </strong><?=$row['exp'];?>
 							<?php if( !empty($row['categories']) ): ?>
