@@ -4,7 +4,7 @@ Plugin Name: ACCESSTRADE Coupon
 Plugin URI: http://github.com/nhymxu/accesstrade-coupon
 Description: Hệ thống coupon đồng bộ tự động từ ACCESSTRADE
 Author: Dũng Nguyễn (nhymxu)
-Version: 0.4.0
+Version: 0.4.1-dev
 Author URI: http://dungnt.net
 */
 
