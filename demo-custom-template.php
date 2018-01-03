@@ -125,7 +125,7 @@
     margin-right: 30px;
     padding: 15px 15px;
     border: 0;
-    background: #1fb207;
+    background: #fe6f17;
     color: #fff;
     font-family: 'Roboto', sans-serif;
     font-size: 16px;
@@ -135,11 +135,11 @@
     text-decoration: none;
     cursor: pointer;
     border-style: solid;
-    border-color: #1fb207;
+    border-color: #fe6f17;
     border-radius: 0
 }
 .xemngayz:hover {
-    background-color: #167f05
+    background-color: #cb5912
 }
 .promotiondetails {
     padding-left: 20px;
