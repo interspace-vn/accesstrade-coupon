@@ -191,7 +191,7 @@ class nhymxu_at_coupon {
 					<div class="promotag">
 						<div class="promotagcont tagsale">
 							<div class="saveamount"><?=($row['save'] != '') ? $row['save'] : 'KM';?></div>
-							<div class="saleorcoupon"><?=($row['code']) ? ' SALE' : ' COUPON';?></div>
+							<div class="saleorcoupon"><?=($row['code']) ? ' COUPON' : ' SALE';?></div>
 						</div>
 					</div>
 					<div class="promotiondetails">
