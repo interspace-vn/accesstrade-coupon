@@ -53,7 +53,7 @@
     position: relative;
     z-index: 1;
     text-align: right;
-    width: 140px;
+    width: 150px;
     margin-top: 35px;
     margin-right: 15px
 }
@@ -118,14 +118,14 @@
     border: 1px solid #ddd
 }
 .xemngayz {
-    width: 88px;
-    min-width: 88px;
+    width: 110px;
+    min-width: 110px;
     display: inline-block;
     position: relative;
     margin-right: 30px;
     padding: 15px 15px;
     border: 0;
-    background: #1fb207;
+    background: #fe6f17;
     color: #fff;
     font-family: 'Roboto', sans-serif;
     font-size: 16px;
@@ -135,11 +135,11 @@
     text-decoration: none;
     cursor: pointer;
     border-style: solid;
-    border-color: #1fb207;
+    border-color: #fe6f17;
     border-radius: 0
 }
 .xemngayz:hover {
-    background-color: #167f05
+    background-color: #cb5912
 }
 .promotiondetails {
     padding-left: 20px;
@@ -230,7 +230,7 @@
     .xemngayz:hover {
         background-color: #167f05
     }
-}	
+}
 </style>
 <script type="text/javascript">
 function nhymxu_at_coupon_copy2clipboard( coupon_value ) {
@@ -248,7 +248,7 @@ function nhymxu_at_coupon_copy2clipboard( coupon_value ) {
             <div class="promotag">
                 <div class="promotagcont tagsale">
                     <div class="saveamount"><?=($row['save'] != '') ? $row['save'] : 'KM';?></div>
-                    <div class="saleorcoupon"><?=($row['code']) ? ' SALE' : ' COUPON';?></div>
+                    <div class="saleorcoupon"><?=($row['code']) ? ' COUPON' : ' SALE';?></div>
                 </div>
             </div>
             <div class="promotiondetails">
@@ -261,17 +261,19 @@ function nhymxu_at_coupon_copy2clipboard( coupon_value ) {
                     <?=( $row['note'] != '' ) ? '<br>' . $row['note'] : '';?>
                 </div>
             </div>
-            <div class="cpbutton">
             <?php if( $row['code'] != '' ): ?>
+            <div class="cpbutton">
                 <div class="copyma" onclick="nhymxu_at_coupon_copy2clipboard('<?=$row['code'];?>');window.open('<?=$row['deeplink'];?>','_blank')">
                     <div class="coupon-code"><?=$row['code'];?></div>
                     <div>COPY MÃ</div>
                 </div>
-            <?php else: ?>
-                <div class="xemngayz" onclick="window.open('<?=$row['deeplink'];?>','_blank')">XEM NGAY</div>
-            <?php endif; ?>
             </div>
+            <?php else: ?>
+            <div class="cpbutton" style="margin-right:0;">
+                <div class="xemngayz" onclick="window.open('<?=$row['deeplink'];?>','_blank')">XEM NGAY</div>
+            </div>
+            <?php endif; ?>
         </div>
-    </div>	
+    </div>
 <?php
 endforeach;
