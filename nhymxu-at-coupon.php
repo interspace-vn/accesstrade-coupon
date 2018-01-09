@@ -199,7 +199,35 @@ class nhymxu_at_coupon {
 		}
 		</style>
 		<script type="text/javascript">
-		function nhymxu_at_coupon_copy2clipboard(b){var a=document.createElement("input");a.setAttribute("value",b);document.body.appendChild(a);a.select();document.execCommand("copy");document.body.removeChild(a)};
+		function nhymxu_at_coupon_copy2clipboard( coupon_value ) {
+			var aux = document.createElement("input");
+			aux.setAttribute("value", coupon_value);
+			document.body.appendChild(aux);
+
+			if( navigator.userAgent.match(/ipad|ipod|iphone/i) ) {
+				var editable = aux.contentEditable;
+				var readOnly = aux.readOnly;
+
+				aux.contentEditable = true;
+				aux.readOnly = false;
+
+				var range = document.createRange();
+				range.selectNodeContents(aux);
+
+				var selection = window.getSelection();
+				selection.removeAllRanges();
+				selection.addRange(range);
+
+				aux.setSelectionRange(0, 999999);
+				aux.contentEditable = editable;
+				aux.readOnly = readOnly;
+
+			} else {
+				aux.select();
+			}
+			document.execCommand("copy");
+			document.body.removeChild(aux);
+		}
 		</script>
 		<?php foreach( $at_coupons as $row ): ?>
 			<div class="coupondiv">
