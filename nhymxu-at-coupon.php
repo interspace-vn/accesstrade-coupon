@@ -4,12 +4,12 @@ Plugin Name: ACCESSTRADE Coupon
 Plugin URI: http://github.com/nhymxu/accesstrade-coupon
 Description: Hệ thống coupon đồng bộ tự động từ ACCESSTRADE
 Author: Dũng Nguyễn (nhymxu)
-Version: 0.4.2
+Version: 0.4.3
 Author URI: http://dungnt.net
 */
 
 defined( 'ABSPATH' ) || die;
-define('NHYMXU_AT_COUPON_VER', "0.4.2");
+define('NHYMXU_AT_COUPON_VER', "0.4.3");
 
 date_default_timezone_set('Asia/Ho_Chi_Minh');
 
@@ -241,7 +241,7 @@ class nhymxu_at_coupon {
 					<div class="promotiondetails">
 						<div class="coupontitle"><small>[<?=$row['type'];?>]</small>&nbsp;<?=$row['title'];?></div>
 						<div class="cpinfo">
-							<strong>Hạn dùng: </strong><?=$row['exp'];?>
+							<strong>Hạn dùng: </strong><?=date('d-m-Y', strtotime($row['exp']));?>
 							<?php if( !empty($row['categories']) ): ?>
 							<br><strong>Ngành hàng:</strong> <?=implode(',', $row['categories']);?>
 							<?php endif; ?>

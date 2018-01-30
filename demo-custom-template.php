@@ -275,7 +275,7 @@ function nhymxu_at_coupon_copy2clipboard( coupon_value ) {
             <div class="promotiondetails">
                 <div class="coupontitle"><?=$row['title'];?></div>
                 <div class="cpinfo">
-                    <strong>Hạn dùng: </strong><?=$row['exp'];?>
+                    <strong>Hạn dùng: </strong><?=date('d-m-Y', strtotime($row['exp']));?>
                     <?php if( !empty($row['categories']) ): ?>
                     <br><strong>Ngành hàng:</strong> <?=implode(',', $row['categories']);?>
                     <?php endif; ?>
