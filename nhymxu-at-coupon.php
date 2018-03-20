@@ -325,6 +325,16 @@ class nhymxu_at_coupon {
 		);
 
 	}
+	
+	public function clear_expired_coupon() {
+		global $wpdb;
+		
+		$today = date('Y-m-d');
+		$result = $wpdb->query("DELETE * FROM {$wpdb->prefix}coupons WHERE exp < '{$today}'");
+		
+		return $result;
+	}
+	
 
 	private function insert_coupon( $data ) {
 		global $wpdb;
