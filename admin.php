@@ -3,6 +3,21 @@
 class nhymxu_at_coupon_admin {
 	public function __construct() {
 		add_action( 'admin_menu', [$this,'admin_page'] );
+		add_action( 'wp_ajax_nhymxu_coupons_ajax_clearexpired', [$this, 'ajax_clear_expired_coupon'] );
+	}
+	
+	public function ajax_clear_expired_coupon() {
+		global $nhymxu_at_coupon;
+		
+		$row_deleted = $nhymxu_at_coupon->clear_expired_coupon();
+		
+		if( $row_deleted === false ) {
+			echo 'failed';
+			wp_die();
+		}
+		
+		echo $row_deleted;
+		wp_die();
 	}
 
 	public function admin_page() {
@@ -49,6 +64,27 @@ class nhymxu_at_coupon_admin {
 					alert('Khởi chạy thành công. Vui lòng đợi vài phút để dữ liệu được cập nhật.');
 				}
 			});
+		}
+		function nhymxu_clear_expired_coupon() {
+			var is_run = jQuery('#nhymxu_clear_expired').data('run');
+			if( is_run !== 0 ) {
+				console.log('Đã chạy rồi');
+				return false;
+			} 
+			jQuery('#nhymxu_clear_expired').attr('disabled', 'disabled');
+			jQuery.ajax({
+				type: "POST",
+				url: ajaxurl,
+				data: { action: 'nhymxu_coupons_ajax_clearexpired' },
+				success: function(response) {
+					if( response === 'failed' ) {
+						alert('Dọn dẹp thất bại, vui lòng thử lại sau');
+						return false;
+					}
+					alert('Đã xoá ' + response + ' coupon hết hạn.');
+					return true;
+				}
+			});		
 		}
 		</script>
 		<div>
@@ -106,7 +142,12 @@ class nhymxu_at_coupon_admin {
 			$total_expired_coupon = $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->prefix}coupons WHERE exp < '{$today}'" );		
 			?>
 			<p>Tổng số coupon trong hệ thống: <strong><?=$total_coupon;?></strong></p>
-			<p>Tổng số coupon hết hạn: <strong><?=$total_expired_coupon;?></strong></p>
+			<p>
+				Tổng số coupon hết hạn: <strong><?=$total_expired_coupon;?></strong>&nbsp;
+				<?php if( $total_expired_coupon > 0 ): ?>
+				- <button id="nhymxu_clear_expired" data-run="0" onclick="nhymxu_clear_expired_coupon();">Dọn dẹp ngay</button>
+				<?php endif; ?>
+			</p>
 			<?php $last_run = (int) get_option('nhymxu_at_coupon_sync_time', 0); $now = time(); ?>
 			<p>
 				Lần đồng bộ cuối: <strong><?=( $last_run == 0 ) ? 'chưa rõ' : date("Y-m-d H:i:s", $last_run);?></strong>
