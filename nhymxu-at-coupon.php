@@ -331,7 +331,7 @@ class nhymxu_at_coupon {
 		global $wpdb;
 
 		$today = date('Y-m-d');
-		$result = $wpdb->query("DELETE * FROM {$wpdb->prefix}coupons WHERE exp < '{$today}'");
+		$result = $wpdb->query("DELETE FROM {$wpdb->prefix}coupons WHERE exp < '{$today}'");
 
 		return $result;
 	}
