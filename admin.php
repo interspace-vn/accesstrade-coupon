@@ -21,7 +21,7 @@ class nhymxu_at_coupon_admin {
 				'accesskey'	=> sanitize_text_field($_REQUEST['nhymxu_at_coupon_accesskey']),
 				'utmsource'	=> sanitize_text_field($_REQUEST['nhymxu_at_coupon_utmsource'])
 			];
-	
+
 			update_option('nhymxu_at_coupon', $input);
 			echo '<h1>Cập nhật thành công</h1><br>';
 		}
@@ -39,7 +39,7 @@ class nhymxu_at_coupon_admin {
 			if( is_run !== 0 ) {
 				console.log('Đã chạy rồi');
 				return false;
-			} 
+			}
 			jQuery('#nhymxu_force_update').attr('disabled', 'disabled');
 			jQuery.ajax({
 				type: "POST",
@@ -47,6 +47,27 @@ class nhymxu_at_coupon_admin {
 				data: { action: 'nhymxu_coupons_ajax_forceupdate' },
 				success: function(response) {
 					alert('Khởi chạy thành công. Vui lòng đợi vài phút để dữ liệu được cập nhật.');
+				}
+			});
+		}
+		function nhymxu_clear_expired_coupon() {
+			var is_run = jQuery('#nhymxu_clear_expired').data('run');
+			if( is_run !== 0 ) {
+				console.log('Đã chạy rồi');
+				return false;
+			}
+			jQuery('#nhymxu_clear_expired').attr('disabled', 'disabled');
+			jQuery.ajax({
+				type: "POST",
+				url: ajaxurl,
+				data: { action: 'nhymxu_coupons_ajax_clearexpired' },
+				success: function(response) {
+					if( response === 'failed' ) {
+						alert('Dọn dẹp thất bại, vui lòng thử lại sau');
+						return false;
+					}
+					alert('Đã xoá ' + response + ' coupon hết hạn.');
+					return true;
 				}
 			});
 		}
@@ -102,11 +123,16 @@ class nhymxu_at_coupon_admin {
 			<hr>
 			<?php
 			$total_coupon = $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->prefix}coupons" );
-			$today = date('Y-m-d');	
-			$total_expired_coupon = $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->prefix}coupons WHERE exp < '{$today}'" );		
+			$today = date('Y-m-d');
+			$total_expired_coupon = $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->prefix}coupons WHERE exp < '{$today}'" );
 			?>
 			<p>Tổng số coupon trong hệ thống: <strong><?=$total_coupon;?></strong></p>
-			<p>Tổng số coupon hết hạn: <strong><?=$total_expired_coupon;?></strong></p>
+			<p>
+				Tổng số coupon hết hạn: <strong><?=$total_expired_coupon;?></strong>&nbsp;
+				<?php if( $total_expired_coupon > 0 ): ?>
+				- <button id="nhymxu_clear_expired" data-run="0" onclick="nhymxu_clear_expired_coupon();">Dọn dẹp ngay</button>
+				<?php endif; ?>
+			</p>
 			<?php $last_run = (int) get_option('nhymxu_at_coupon_sync_time', 0); $now = time(); ?>
 			<p>
 				Lần đồng bộ cuối: <strong><?=( $last_run == 0 ) ? 'chưa rõ' : date("Y-m-d H:i:s", $last_run);?></strong>
