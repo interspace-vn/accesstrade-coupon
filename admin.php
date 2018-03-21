@@ -3,21 +3,6 @@
 class nhymxu_at_coupon_admin {
 	public function __construct() {
 		add_action( 'admin_menu', [$this,'admin_page'] );
-		add_action( 'wp_ajax_nhymxu_coupons_ajax_clearexpired', [$this, 'ajax_clear_expired_coupon'] );
-	}
-	
-	public function ajax_clear_expired_coupon() {
-		global $nhymxu_at_coupon;
-		
-		$row_deleted = $nhymxu_at_coupon->clear_expired_coupon();
-		
-		if( $row_deleted === false ) {
-			echo 'failed';
-			wp_die();
-		}
-		
-		echo $row_deleted;
-		wp_die();
 	}
 
 	public function admin_page() {
@@ -36,7 +21,7 @@ class nhymxu_at_coupon_admin {
 				'accesskey'	=> sanitize_text_field($_REQUEST['nhymxu_at_coupon_accesskey']),
 				'utmsource'	=> sanitize_text_field($_REQUEST['nhymxu_at_coupon_utmsource'])
 			];
-	
+
 			update_option('nhymxu_at_coupon', $input);
 			echo '<h1>Cập nhật thành công</h1><br>';
 		}
@@ -54,7 +39,7 @@ class nhymxu_at_coupon_admin {
 			if( is_run !== 0 ) {
 				console.log('Đã chạy rồi');
 				return false;
-			} 
+			}
 			jQuery('#nhymxu_force_update').attr('disabled', 'disabled');
 			jQuery.ajax({
 				type: "POST",
@@ -70,7 +55,7 @@ class nhymxu_at_coupon_admin {
 			if( is_run !== 0 ) {
 				console.log('Đã chạy rồi');
 				return false;
-			} 
+			}
 			jQuery('#nhymxu_clear_expired').attr('disabled', 'disabled');
 			jQuery.ajax({
 				type: "POST",
@@ -84,7 +69,7 @@ class nhymxu_at_coupon_admin {
 					alert('Đã xoá ' + response + ' coupon hết hạn.');
 					return true;
 				}
-			});		
+			});
 		}
 		</script>
 		<div>
@@ -138,8 +123,8 @@ class nhymxu_at_coupon_admin {
 			<hr>
 			<?php
 			$total_coupon = $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->prefix}coupons" );
-			$today = date('Y-m-d');	
-			$total_expired_coupon = $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->prefix}coupons WHERE exp < '{$today}'" );		
+			$today = date('Y-m-d');
+			$total_expired_coupon = $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->prefix}coupons WHERE exp < '{$today}'" );
 			?>
 			<p>Tổng số coupon trong hệ thống: <strong><?=$total_coupon;?></strong></p>
 			<p>

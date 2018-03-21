@@ -22,6 +22,7 @@ class nhymxu_at_coupon {
 		add_shortcode( 'coupon', [$this,'shortcode_callback'] );
 		add_action( 'init', [$this, 'init_updater'] );
 		add_action( 'wp_ajax_nhymxu_coupons_ajax_forceupdate', [$this, 'ajax_force_update'] );
+		add_action( 'wp_ajax_nhymxu_coupons_ajax_clearexpired', [$this, 'ajax_clear_expired_coupon'] );
 	}
 
 	public function do_this_twicedaily() {
@@ -325,16 +326,27 @@ class nhymxu_at_coupon {
 		);
 
 	}
-	
+
 	public function clear_expired_coupon() {
 		global $wpdb;
-		
+
 		$today = date('Y-m-d');
 		$result = $wpdb->query("DELETE * FROM {$wpdb->prefix}coupons WHERE exp < '{$today}'");
-		
+
 		return $result;
 	}
-	
+
+	public function ajax_clear_expired_coupon() {
+		$row_deleted = $this->clear_expired_coupon();
+
+		if( $row_deleted === false ) {
+			echo 'failed';
+			wp_die();
+		}
+
+		echo $row_deleted;
+		wp_die();
+	}
 
 	private function insert_coupon( $data ) {
 		global $wpdb;
