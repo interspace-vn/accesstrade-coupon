@@ -96,6 +96,18 @@ class nhymxu_at_coupon_install {
 	}
 
 	static public function plugin_install() {
+		if (version_compare(PHP_VERSION, '5.5.20', '<')) {
+			wp_die(
+				sprintf(
+					'AccessTrade Coupon plugin requires PHP 5.5.20 or higher.
+					Your WordPress site is using PHP %s. Please contact your hosting
+					provider and ask that they upgrade the version of PHP on which
+					your installation of WordPress is running. Click back in your
+					browser to your WordPress dashboard.',
+					PHP_VERSION
+				)
+			);
+    	}
 		$db_version = get_option( 'nhymxu_at_coupon_db_ver', '0.0.0' );
 
 		static::active_track();
