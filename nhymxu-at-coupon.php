@@ -108,13 +108,17 @@ class nhymxu_at_coupon {
 		$vendor_slug = implode(',', $vendor_slug);
 
 		$query_where = '';
-		if( $has_coupon == 1 ) {
-			$query_where = " AND coupons.code != ''";
-		} elseif( $has_coupon == 0 ) {
-			$query_where = " AND coupons.code == ''";
-		} 
+		if( $has_coupon != '' ) {
+			//$has_coupon = (int) $has_coupon;
+			if( $has_coupon == '1' ) {
+				$query_where = " AND coupons.code != ''";
+			}
+			if( $has_coupon == '0' ) {
+				$query_where = " AND coupons.code == ''";
+			} 
+		}
 		
-		$sql = "SELECT * FROM {$wpdb->prefix}coupons WHERE type IN ({$vendor_slug}) AND exp >= '{$today}' {$query_where} ORDER BY id DESC";
+		$sql = "SELECT coupons.* FROM {$wpdb->prefix}coupons as coupons WHERE coupons.type IN ({$vendor_slug}) AND coupons.exp >= '{$today}' {$query_where} ORDER BY coupons.id DESC";
 		
 		if( $category != '' ) {
 			$cat_slug = explode(',', $category);
@@ -209,7 +213,7 @@ class nhymxu_at_coupon {
 			$utm_source = '&utm_source='. $option['utmsource'];
 		}
 
-		return 'https://pub.accesstrade.vn/deep_link/'. $option['uid'] .'?url=' . rawurlencode( $url ) . $utm_source;
+		return 'https://pub.accesstrade.vn/deep_link/'. $option['uid'] .'?url=' . rawurlencode( $url ) . $utm_source . '&at_source=smart-coupon';
 	}
 
 	/*
