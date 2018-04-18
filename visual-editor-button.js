@@ -25,6 +25,13 @@
                             minWidth: 300,
                             values : nhymxu_at_coupon_get_tinymce_list('cat'),
                         },
+                        {
+                            type   : 'listbox',
+                            name   : 'nxfilter',
+                            label  : 'Filter',
+                            minWidth: 300,
+                            values : [{text:'Tất cả', value:''}, {text:'Có mã giảm giá', value:'1'}, {text:'Không có mã giảm giá', value:'0'}],
+                        },
                     ],
                     buttons: [
                         {
@@ -48,6 +55,9 @@
                             if( e.data.nxcats.length > 0 ) {
                                 returnText = returnText + ' cat="' + e.data.nxcats + '"';
                             }
+                            if( e.data.nxfilter.length > 0 ) {
+                                returnText = returnText + ' coupon="' + e.data.nxfilter + '"';
+                            }
                             returnText = returnText + ']'; 
                             ed.execCommand('mceInsertContent', 0, returnText);
                         } else {
@@ -59,10 +69,10 @@
         },
         getInfo: function() {
             return {
-                longname : 'Nhymxu AT Coupon Generater',
+                longname : 'Nhymxu AT Coupon Generator',
                 author : 'Dũng Nguyễn',
                 authorurl : 'https://dungnt.net',
-                version : "0.1"
+                version : "0.2.0"
             };
         }
     });
