@@ -4,12 +4,12 @@ Plugin Name: ACCESSTRADE Coupon
 Plugin URI: http://github.com/nhymxu/accesstrade-coupon
 Description: Hệ thống coupon đồng bộ tự động từ ACCESSTRADE
 Author: Dũng Nguyễn (nhymxu)
-Version: 0.5.0
+Version: 0.6.0
 Author URI: http://dungnt.net
 */
 
 defined( 'ABSPATH' ) || die;
-define('NHYMXU_AT_COUPON_VER', "0.5.0");
+define('NHYMXU_AT_COUPON_VER', "0.6.0");
 
 date_default_timezone_set('Asia/Ho_Chi_Minh');
 
@@ -72,14 +72,14 @@ class nhymxu_at_coupon {
 		$args = shortcode_atts( [
 			'type' => '',
 			'cat'	=> '',
-			'limit' => ''
+			'limit' => '',
+			'coupon' => '',
 		], $atts );
 
 		if( '' == $args['type'] )
 			return '';
 
-		$data = $this->get_coupons( $args['type'], $args['cat'], $args['limit'] );
-
+		$data = $this->get_coupons( $args );
 		$html = $this->build_html( $data );
 
 		return $html;
@@ -88,10 +88,15 @@ class nhymxu_at_coupon {
 	/*
 	 * Get list coupon from database
 	 */
-	private function get_coupons( $vendor, $category = '', $limit = '' ) {
+	private function get_coupons( $args ) {
 		global $wpdb;
 
 		date_default_timezone_set('Asia/Ho_Chi_Minh');
+		
+		$vendor = $args['vendor'];
+		$category = $args['category'];
+		$limit = $args['limit'];
+		$has_coupon = $args['coupon'];
 
 		$today = date('Y-m-d');
 
@@ -102,8 +107,15 @@ class nhymxu_at_coupon {
 		}
 		$vendor_slug = implode(',', $vendor_slug);
 
-		$sql = "SELECT * FROM {$wpdb->prefix}coupons WHERE type IN ({$vendor_slug}) AND exp >= '{$today}' ORDER BY id DESC";
-
+		$query_where = '';
+		if( $has_coupon == 1 ) {
+			$query_where = " AND coupons.code != ''";
+		} elseif( $has_coupon == 0 ) {
+			$query_where = " AND coupons.code == ''";
+		} 
+		
+		$sql = "SELECT * FROM {$wpdb->prefix}coupons WHERE type IN ({$vendor_slug}) AND exp >= '{$today}' {$query_where} ORDER BY id DESC";
+		
 		if( $category != '' ) {
 			$cat_slug = explode(',', $category);
 			$cat_slug_arr = [];
@@ -127,7 +139,8 @@ class nhymxu_at_coupon {
 						ON rel.coupon_id = coupons.id
 					WHERE coupons.type IN ({$vendor_slug})
 						AND rel.category_id IN ({$cat_id})
-						AND coupons.exp >= '{$today}'
+						AND coupons.exp >= '{$today}' 
+						{$query_where} 
 					ORDER BY coupons.id DESC";
 		}
 
