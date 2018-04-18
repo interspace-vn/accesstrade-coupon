@@ -69,7 +69,7 @@
         },
         getInfo: function() {
             return {
-                longname : 'Nhymxu AT Coupon Generater',
+                longname : 'Nhymxu AT Coupon Generator',
                 author : 'Dũng Nguyễn',
                 authorurl : 'https://dungnt.net',
                 version : "0.2.0"
