@@ -93,8 +93,8 @@ class nhymxu_at_coupon {
 
 		date_default_timezone_set('Asia/Ho_Chi_Minh');
 		
-		$vendor = $args['vendor'];
-		$category = $args['category'];
+		$vendor = $args['type'];
+		$category = $args['cat'];
 		$limit = $args['limit'];
 		$has_coupon = $args['coupon'];
 
