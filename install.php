@@ -96,10 +96,10 @@ class nhymxu_at_coupon_install {
 	}
 
 	static public function plugin_install() {
-		if (version_compare(PHP_VERSION, '5.5.20', '<')) {
+		if (version_compare(PHP_VERSION, '5.4.30', '<')) {
 			wp_die(
 				sprintf(
-					'AccessTrade Coupon plugin requires PHP 5.5.20 or higher.
+					'AccessTrade Coupon plugin requires PHP 5.4.30 or higher.
 					Your WordPress site is using PHP %s. Please contact your hosting
 					provider and ask that they upgrade the version of PHP on which
 					your installation of WordPress is running. Click back in your
