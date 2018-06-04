@@ -1,15 +1,15 @@
 <?php
 /*
 Plugin Name: ACCESSTRADE Coupon
-Plugin URI: http://github.com/nhymxu/accesstrade-coupon
+Plugin URI: https://github.com/nhymxu/accesstrade-coupon
 Description: Hệ thống coupon đồng bộ tự động từ ACCESSTRADE
 Author: Dũng Nguyễn (nhymxu)
-Version: 0.6.1
-Author URI: http://dungnt.net
+Version: 0.6.2
+Author URI: https://dungnt.net
 */
 
 defined( 'ABSPATH' ) || die;
-define('NHYMXU_AT_COUPON_VER', "0.6.1");
+define('NHYMXU_AT_COUPON_VER', "0.6.2");
 
 date_default_timezone_set('Asia/Ho_Chi_Minh');
 
@@ -213,7 +213,7 @@ class nhymxu_at_coupon {
 			$utm_source = '&utm_source='. $option['utmsource'];
 		}
 
-		return 'https://pub.accesstrade.vn/deep_link/'. $option['uid'] .'?url=' . rawurlencode( $url ) . $utm_source . '&at_source=smart-coupon';
+		return 'https://fast.accesstrade.com.vn/deep_link/'. $option['uid'] .'?url=' . rawurlencode( $url ) . $utm_source . '&at_source=smart-coupon';
 	}
 
 	/*
